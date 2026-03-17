@@ -22,8 +22,8 @@ export default function ResponsesPage() {
       setLoading(true);
       try {
         const [formRes, respRes] = await Promise.all([
-          api.get(`/forms/${id}`),
-          api.get(`/responses/form/${id}`, { params: { page, limit: 15 } })
+          api.get(`/api/forms/${id}`),
+          api.get(`/api/responses/form/${id}`, { params: { page, limit: 15 } })
         ]);
         setForm(formRes.data.form);
         setResponses(respRes.data.responses);
@@ -36,7 +36,7 @@ export default function ResponsesPage() {
 
   const handleDelete = async () => {
     try {
-      await api.delete(`/responses/${deleteId}`);
+      await api.delete(`/api/responses/${deleteId}`);
       setResponses(r => r.filter(x => x._id !== deleteId));
       toast.success('Response deleted');
     } catch { toast.error('Failed to delete'); }

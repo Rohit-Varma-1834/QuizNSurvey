@@ -21,7 +21,7 @@ export default function FormResponsePage() {
   const QUESTIONS_PER_PAGE = 5;
 
   useEffect(() => {
-    api.get(`/public/form/${publicId}`)
+    api.get(`/api/public/form/${publicId}`)
       .then(({ data }) => {
         setForm(data.form);
         // Init answers
@@ -83,7 +83,7 @@ export default function FormResponsePage() {
         isAnonymous: form.settings?.allowAnonymous,
         timeTaken: Math.round((Date.now() - startTime) / 1000),
       };
-      const { data } = await api.post(`/responses/submit/${publicId}`, payload);
+      const { data } = await api.post(`/api/responses/submit/${publicId}`, payload);
       setResult(data.result);
       setSubmitted(true);
     } catch (err) {

@@ -10,11 +10,7 @@ export const AuthProvider = ({ children }) => {
 
   const loadUser = useCallback(async () => {
     const token = localStorage.getItem('token');
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
+    if (!token) { setLoading(false); return; }
     try {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       const { data } = await api.get('/api/auth/me');
@@ -27,9 +23,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    loadUser();
-  }, [loadUser]);
+  useEffect(() => { loadUser(); }, [loadUser]);
 
   const login = async (email, password) => {
     const { data } = await api.post('/api/auth/login', { email, password });
@@ -48,9 +42,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    try {
-      await api.post('/api/auth/logout');
-    } catch {}
+    try { await api.post('/api/auth/logout'); } catch {}
     localStorage.removeItem('token');
     delete api.defaults.headers.common['Authorization'];
     setUser(null);

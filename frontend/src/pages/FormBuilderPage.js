@@ -114,8 +114,8 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
     if (!validate()) { toast.error('Please fix the errors'); return; }
     setSaving(true);
     try {
-      if (isEdit) { await api.put(`/forms/${formId}`, buildPayload()); toast.success(`${isQuiz ? 'Quiz' : 'Survey'} saved!`); }
-      else { const { data } = await api.post('/forms', buildPayload()); toast.success(`${isQuiz ? 'Quiz' : 'Survey'} created!`); onSaved(data.form._id); }
+      if (isEdit) { await api.put(`/api/forms/${formId}`, buildPayload()); toast.success(`${isQuiz ? 'Quiz' : 'Survey'} saved!`); }
+      else { const { data } = await api.post('/api/forms', buildPayload()); toast.success(`${isQuiz ? 'Quiz' : 'Survey'} created!`); onSaved(data.form._id); }
     } catch (err) { toast.error(err.response?.data?.message || 'Failed to save'); }
     finally { setSaving(false); }
   };
@@ -125,7 +125,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
     if (!validate()) { toast.error('Fix errors first'); return; }
     setPublishing(true);
     try {
-      const { data } = await api.post(`/forms/${formId}/publish`);
+      const { data } = await api.post(`/api/forms/${formId}/publish`);
       toast.success(data.message);
       setForm(f => ({ ...f, status: data.form.status }));
     } catch (err) { toast.error(err.response?.data?.message || 'Failed'); }
@@ -407,7 +407,7 @@ export default function FormBuilderPage() {
 
   useEffect(() => {
     if (!isEdit) return;
-    api.get(`/forms/${id}`).then(({ data }) => {
+    api.get(`/api/forms/${id}`).then(({ data }) => {
       const f = data.form;
       setSelectedType(f.type);
       setForm({ ...defaultForm(f.type), ...f, tags: Array.isArray(f.tags) ? f.tags.join(', ') : '', expiresAt: f.expiresAt ? f.expiresAt.split('T')[0] : '', settings: { ...defaultForm(f.type).settings, ...f.settings } });

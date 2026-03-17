@@ -25,7 +25,7 @@ export default function ProfilePage() {
     const reader = new FileReader();
     reader.onload = async (ev) => {
       try {
-        const { data } = await api.put('/users/avatar', { avatar: ev.target.result });
+        const { data } = await api.put('/api/users/avatar', { avatar: ev.target.result });
         updateUser({ avatar: data.user.avatar });
         toast.success('Avatar updated!');
       } catch { toast.error('Failed to update avatar'); }
@@ -38,7 +38,7 @@ export default function ProfilePage() {
     if (!profile.name.trim()) { toast.error('Name is required'); return; }
     setSavingProfile(true);
     try {
-      const { data } = await api.put('/users/profile', profile);
+      const { data } = await api.put('/api/users/profile', profile);
       updateUser(data.user);
       toast.success('Profile updated!');
     } catch (err) { toast.error(err.response?.data?.message || 'Failed to update'); }
@@ -51,7 +51,7 @@ export default function ProfilePage() {
     if (passwords.newPw.length < 6) { toast.error('Password must be at least 6 characters'); return; }
     setSavingPw(true);
     try {
-      await api.put('/users/password', { currentPassword: passwords.current, newPassword: passwords.newPw });
+      await api.put('/api/users/password', { currentPassword: passwords.current, newPassword: passwords.newPw });
       toast.success('Password updated!');
       setPasswords({ current: '', newPw: '', confirm: '' });
     } catch (err) { toast.error(err.response?.data?.message || 'Failed to update password'); }
@@ -62,7 +62,7 @@ export default function ProfilePage() {
     e.preventDefault();
     setSavingEmail(true);
     try {
-      const { data } = await api.put('/users/email', { email });
+      const { data } = await api.put('/api/users/email', { email });
       updateUser({ email: data.user.email });
       toast.success('Email updated!');
     } catch (err) { toast.error(err.response?.data?.message || 'Failed to update email'); }
@@ -71,7 +71,7 @@ export default function ProfilePage() {
 
   const handleDeleteAccount = async () => {
     try {
-      await api.delete('/users/account');
+      await api.delete('/api/users/account');
       await logout();
       navigate('/');
       toast.success('Account deleted');

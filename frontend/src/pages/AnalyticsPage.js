@@ -24,7 +24,7 @@ export default function AnalyticsPage() {
   const fetchAnalytics = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get(`/analytics/form/${id}`);
+      const { data } = await api.get(`/api/analytics/form/${id}`);
       setAnalytics(data.analytics);
     } catch { setError('Failed to load analytics'); }
     finally { setLoading(false); }
