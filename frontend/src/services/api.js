@@ -6,8 +6,17 @@ const api = axios.create({
   timeout: 15000,
 });
 
+const isPublicFormPath = (pathname = '') => /^\/f\/[^/]+\/?$/.test(pathname);
+const isPublicFormRequest = (url = '') =>
+  url.includes('/api/public/') || url.includes('/api/responses/submit/');
+
 // Attach token to every request
 api.interceptors.request.use((config) => {
+  if (isPublicFormRequest(config.url || '')) {
+    delete config.headers['Authorization'];
+    return config;
+  }
+
   const token = localStorage.getItem('token');
   if (token) config.headers['Authorization'] = `Bearer ${token}`;
   return config;
@@ -17,17 +26,20 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 || error.response?.status === 403) {
       const currentPath = window.location.pathname;
       const requestUrl = error.config?.url || '';
-      const isPublicFormPage = /^\/f\/[^/]+\/?$/.test(currentPath);
+      const isPublicFormPage = isPublicFormPath(currentPath);
       const isAuthBootstrapRequest = requestUrl.includes('/api/auth/me');
+      const isPublicRequest = isPublicFormRequest(requestUrl);
 
-      localStorage.removeItem('token');
-      delete api.defaults.headers.common['Authorization'];
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        delete api.defaults.headers.common['Authorization'];
+      }
 
       if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-        if (!isPublicFormPage && !isAuthBootstrapRequest) {
+        if (!isPublicFormPage && !isAuthBootstrapRequest && !isPublicRequest) {
           window.location.href = '/login';
         }
       }
