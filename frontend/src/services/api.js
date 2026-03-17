@@ -17,11 +17,19 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const msg = error.response?.data?.message;
     if (error.response?.status === 401) {
+      const currentPath = window.location.pathname;
+      const requestUrl = error.config?.url || '';
+      const isPublicFormPage = /^\/f\/[^/]+\/?$/.test(currentPath);
+      const isAuthBootstrapRequest = requestUrl.includes('/api/auth/me');
+
       localStorage.removeItem('token');
+      delete api.defaults.headers.common['Authorization'];
+
       if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-        window.location.href = '/login';
+        if (!isPublicFormPage && !isAuthBootstrapRequest) {
+          window.location.href = '/login';
+        }
       }
     } else if (error.response?.status === 429) {
       toast.error('Too many requests. Please wait a moment.');
