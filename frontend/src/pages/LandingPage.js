@@ -55,7 +55,7 @@ export default function LandingPage() {
             fontFamily: 'var(--font-display)',
             fontWeight: 800, lineHeight: 1.1,
             marginBottom: 24,
-            background: 'linear-gradient(135deg, #1e1b4b 0%, #6366f1 50%, #10b981 100%)',
+            background: 'linear-gradient(135deg, #1e1b4b 0%, #ff0000 50%, #10b981 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
           }}>
