@@ -55,7 +55,7 @@ export default function LandingPage() {
             fontFamily: 'var(--font-display)',
             fontWeight: 800, lineHeight: 1.1,
             marginBottom: 24,
-            background: 'linear-gradient(135deg, #1e1b4b 0%, #ff0000 50%, #10b981 100%)',
+            background: 'linear-gradient(135deg, #1e1b4b 0%, #bc7272 50%, #10b981 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
           }}>
@@ -96,7 +96,7 @@ export default function LandingPage() {
           </div>
           <div style={{ padding: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16 }}>
             {[
-              { label: 'Total Forms', value: '24', color: '#ff0000' },
+              { label: 'Total Forms', value: '24', color: '#6366f1' },
               { label: 'Responses', value: '1,847', color: '#10b981' },
               { label: 'Avg Score', value: '78%', color: '#f59e0b' },
               { label: 'Published', value: '18', color: '#8b5cf6' },
