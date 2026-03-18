@@ -70,7 +70,7 @@ export default function QuestionEditor({ question, index, onChange, onDelete, on
             <div key={opt} style={{
               display: 'flex', alignItems: 'center', gap: 10,
               padding: '10px 14px', borderRadius: 8, border: '1.5px solid var(--border)',
-              background: formType === 'quiz' && question.correctAnswer === opt ? '#d1fae5' : 'var(--bg-card)'
+              background: formType === 'quiz' && question.correctAnswer === opt ? 'var(--success-soft)' : 'var(--bg-card)'
             }}>
               <div style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid var(--border)', flexShrink: 0 }} />
               <span style={{ flex: 1, fontSize: 14 }}>{opt}</span>

@@ -114,7 +114,7 @@ export default function FormResponsePage() {
   );
 
   if (submitted && result) return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg, #f0f4ff 0%, #faf5ff 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(160deg, rgba(var(--bg-rgb),1) 0%, rgba(var(--primary-rgb),0.08) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
       <div className="card" style={{ maxWidth: 500, width: '100%', padding: '40px 36px', textAlign: 'center', animation: 'scaleIn 0.4s ease' }}>
         <div style={{ fontSize: 64, marginBottom: 16 }}>
           {form.type === 'quiz' ? (result.passed === true ? '🎉' : result.passed === false ? '😕' : '✅') : '🙏'}
@@ -126,7 +126,7 @@ export default function FormResponsePage() {
 
         {form.type === 'quiz' && result.score !== null && (
           <div style={{ background: 'var(--bg-secondary)', borderRadius: 16, padding: '24px 20px', marginBottom: 24 }}>
-            <p style={{ fontSize: 48, fontWeight: 800, fontFamily: 'var(--font-display)', color: result.passed === true ? '#10b981' : result.passed === false ? '#ef4444' : 'var(--primary)' }}>
+            <p style={{ fontSize: 48, fontWeight: 800, fontFamily: 'var(--font-display)', color: result.passed === true ? 'var(--secondary)' : result.passed === false ? 'var(--danger)' : 'var(--primary)' }}>
               {result.percentage}%
             </p>
             <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginTop: 4 }}>
@@ -153,7 +153,7 @@ export default function FormResponsePage() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 60 }}>
       {/* Form header */}
-      <div style={{ background: form.coverColor || '#6366f1', padding: '40px 24px 32px' }}>
+      <div style={{ background: form.coverColor || 'var(--primary)', padding: '40px 24px 32px' }}>
         <div style={{ maxWidth: 700, margin: '0 auto' }}>
           <span style={{ background: 'rgba(255,255,255,0.2)', color: 'white', borderRadius: 99, padding: '3px 12px', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             {form.type}
@@ -178,14 +178,14 @@ export default function FormResponsePage() {
       {/* Timer */}
       {timeLeft !== null && (
         <div style={{
-          background: timeLeft < 60 ? '#fee2e2' : '#f0fdf4',
-          borderBottom: `1px solid ${timeLeft < 60 ? '#fca5a5' : '#bbf7d0'}`,
+          background: timeLeft < 60 ? 'var(--danger-soft)' : 'var(--success-soft)',
+          borderBottom: `1px solid ${timeLeft < 60 ? 'var(--danger)' : 'var(--secondary)'}`,
           padding: '8px 24px', textAlign: 'center'
         }}>
-          <span style={{ fontWeight: 700, fontSize: 16, color: timeLeft < 60 ? '#dc2626' : '#16a34a', fontFamily: 'var(--font-display)' }}>
+          <span style={{ fontWeight: 700, fontSize: 16, color: timeLeft < 60 ? 'var(--danger)' : 'var(--secondary)', fontFamily: 'var(--font-display)' }}>
             ⏱ {formatTime(timeLeft)}
           </span>
-          {timeLeft < 60 && <span style={{ fontSize: 13, color: '#dc2626', marginLeft: 8 }}>— Hurry up!</span>}
+          {timeLeft < 60 && <span style={{ fontSize: 13, color: 'var(--danger)', marginLeft: 8 }}>- Hurry up!</span>}
         </div>
       )}
 
@@ -219,7 +219,7 @@ export default function FormResponsePage() {
           {pageQuestions.map((q, qi) => {
             const globalIndex = currentPage * QUESTIONS_PER_PAGE + qi;
             return (
-              <div key={q.id} className="card" style={{ padding: '20px 22px', borderLeft: `4px solid ${validationErrors[q.id] ? '#ef4444' : form.coverColor}` }}>
+              <div key={q.id} className="card" style={{ padding: '20px 22px', borderLeft: `4px solid ${validationErrors[q.id] ? 'var(--danger)' : form.coverColor}` }}>
                 <div style={{ display: 'flex', gap: 10, marginBottom: 14, alignItems: 'flex-start' }}>
                   <span style={{ background: form.coverColor, color: 'white', width: 26, height: 26, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
                     {globalIndex + 1}
@@ -227,7 +227,7 @@ export default function FormResponsePage() {
                   <div>
                     <p style={{ fontWeight: 600, fontSize: 15, lineHeight: 1.5 }}>
                       {q.question}
-                      {q.required && <span style={{ color: '#ef4444', marginLeft: 4 }}>*</span>}
+                      {q.required && <span style={{ color: 'var(--danger)', marginLeft: 4 }}>*</span>}
                     </p>
                     {q.description && <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>{q.description}</p>}
                   </div>
@@ -236,7 +236,7 @@ export default function FormResponsePage() {
                 <QuestionInput q={q} answers={answers} setAnswer={setAnswer} toggleCheckbox={toggleCheckbox} coverColor={form.coverColor} />
 
                 {validationErrors[q.id] && (
-                  <p style={{ fontSize: 12, color: '#ef4444', marginTop: 8 }}>⚠️ {validationErrors[q.id]}</p>
+                  <p style={{ fontSize: 12, color: 'var(--danger)', marginTop: 8 }}>⚠️ {validationErrors[q.id]}</p>
                 )}
               </div>
             );
@@ -272,7 +272,7 @@ export default function FormResponsePage() {
         </div>
 
         {error && (
-          <div style={{ background: '#fee2e2', border: '1px solid #fca5a5', borderRadius: 8, padding: '10px 16px', marginTop: 16, fontSize: 13, color: '#991b1b' }}>
+          <div style={{ background: 'var(--danger-soft)', border: '1px solid color-mix(in srgb, var(--danger) 28%, var(--bg-secondary) 72%)', borderRadius: 8, padding: '10px 16px', marginTop: 16, fontSize: 13, color: 'var(--danger)' }}>
             {error}
           </div>
         )}

@@ -85,7 +85,7 @@ export default function ResponsesPage() {
                   </div>
                   {form?.type === 'quiz' && r.percentage !== null && (
                     <div style={{ textAlign: 'right', marginRight: 8 }}>
-                      <p style={{ fontWeight: 800, fontSize: 18, color: r.percentage >= 60 ? '#10b981' : '#ef4444' }}>
+                      <p style={{ fontWeight: 800, fontSize: 18, color: r.percentage >= 60 ? 'var(--secondary)' : 'var(--danger)' }}>
                         {r.percentage}%
                       </p>
                       <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>{r.score}/{r.totalPoints} pts</p>
@@ -133,7 +133,7 @@ export default function ResponsesPage() {
                               {Array.isArray(ans.answer) ? ans.answer.join(', ') : (ans.answer?.toString() || <em style={{ color: 'var(--text-muted)' }}>No answer</em>)}
                             </div>
                             {form?.type === 'quiz' && q?.correctAnswer !== null && ans.isCorrect === false && (
-                              <p style={{ fontSize: 12, color: '#10b981', marginTop: 6 }}>
+                              <p style={{ fontSize: 12, color: 'var(--secondary)', marginTop: 6 }}>
                                 ✓ Correct answer: <strong>{Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : q.correctAnswer}</strong>
                               </p>
                             )}

@@ -9,9 +9,9 @@ import { ConfirmDialog } from '../ui/Common';
 import ShareModal from './ShareModal';
 
 const STATUS_COLORS = {
-  published: { bg: '#d1fae5', text: '#065f46', dot: '#10b981' },
-  draft: { bg: '#f3f4f6', text: '#6b7280', dot: '#9ca3af' },
-  closed: { bg: '#fee2e2', text: '#991b1b', dot: '#ef4444' },
+  published: { bg: 'var(--success-soft)', text: 'var(--success)', dot: 'var(--secondary)' },
+  draft: { bg: 'var(--bg-secondary)', text: 'var(--text-secondary)', dot: 'var(--text-muted)' },
+  closed: { bg: 'var(--danger-soft)', text: 'var(--danger)', dot: 'var(--danger)' },
 };
 
 export default function FormCard({ form, onDelete, onDuplicate, onPublish }) {
@@ -64,7 +64,7 @@ export default function FormCard({ form, onDelete, onDuplicate, onPublish }) {
         onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; }}
         onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = ''; }}
       >
-        <div style={{ height: 6, background: form.coverColor || '#6366f1' }} />
+        <div style={{ height: 6, background: form.coverColor || 'var(--primary)' }} />
 
         <div style={{ padding: '16px 18px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
@@ -72,8 +72,8 @@ export default function FormCard({ form, onDelete, onDuplicate, onPublish }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 <span style={{
                   fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-                  color: form.type === 'quiz' ? '#6366f1' : '#10b981',
-                  background: form.type === 'quiz' ? '#ede9fe' : '#d1fae5',
+                  color: form.type === 'quiz' ? 'var(--primary)' : 'var(--secondary)',
+                  background: form.type === 'quiz' ? 'var(--primary-light)' : 'var(--success-soft)',
                   padding: '2px 8px', borderRadius: 6
                 }}>
                   {form.type}
@@ -158,13 +158,13 @@ export default function FormCard({ form, onDelete, onDuplicate, onPublish }) {
                   display: 'flex', alignItems: 'center', gap: 10,
                   padding: '9px 14px', borderRadius: 7, fontSize: 13,
                   width: '100%', textAlign: 'left',
-                  color: item.danger ? '#ef4444' : 'var(--text-primary)',
+                  color: item.danger ? 'var(--danger)' : 'var(--text-primary)',
                   background: 'transparent',
                   border: 'none', cursor: 'pointer',
                   transition: 'background 0.1s',
                   fontFamily: 'var(--font-body)',
                 }}
-                onMouseOver={e => e.currentTarget.style.background = item.danger ? '#fee2e2' : 'var(--bg-secondary)'}
+                onMouseOver={e => e.currentTarget.style.background = item.danger ? 'var(--danger-soft)' : 'var(--bg-secondary)'}
                 onMouseOut={e => e.currentTarget.style.background = 'transparent'}
               >
                 <item.icon size={15} />

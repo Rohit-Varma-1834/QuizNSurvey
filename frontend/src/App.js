@@ -73,8 +73,8 @@ export default function App() {
                 fontFamily: 'var(--font-body)',
                 fontSize: '14px',
               },
-              success: { iconTheme: { primary: '#10b981', secondary: 'white' } },
-              error: { iconTheme: { primary: '#ef4444', secondary: 'white' } },
+              success: { iconTheme: { primary: '#2b2d42', secondary: 'white' } },
+              error: { iconTheme: { primary: '#d90429', secondary: 'white' } },
             }}
           />
         </BrowserRouter>

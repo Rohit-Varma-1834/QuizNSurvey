@@ -12,7 +12,7 @@ import { HiOutlineArrowLeft, HiOutlineEye, HiOutlineRefresh } from 'react-icons/
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler);
 
-const CHART_COLORS = ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#ec4899'];
+const CHART_COLORS = ['#2b2d42', '#8d99ae', '#ef233c', '#d90429', '#5c6578', '#c8d0dc', '#a3afc1', '#f3a7b2'];
 
 export default function AnalyticsPage() {
   const { id } = useParams();
@@ -45,19 +45,19 @@ export default function AnalyticsPage() {
       label: 'Responses',
       data: (a.dailyResponses || []).map(d => d.count),
       fill: true,
-      backgroundColor: 'rgba(99,102,241,0.1)',
-      borderColor: '#6366f1',
+      backgroundColor: 'rgba(239,35,60,0.12)',
+      borderColor: '#ef233c',
       borderWidth: 2.5,
       tension: 0.4,
       pointRadius: 4,
-      pointBackgroundColor: '#6366f1',
+      pointBackgroundColor: '#ef233c',
     }]
   };
 
   const chartOpts = {
     responsive: true,
     plugins: { legend: { display: false } },
-    scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { stepSize: 1 } }, x: { grid: { display: false } } }
+    scales: { y: { beginAtZero: true, grid: { color: 'rgba(43,45,66,0.08)' }, ticks: { stepSize: 1 } }, x: { grid: { display: false } } }
   };
 
   return (
@@ -92,15 +92,15 @@ export default function AnalyticsPage() {
           <>
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16, marginBottom: 28 }}>
-              <StatCard label="Total Responses" value={a.totalResponses} icon="📋" color="#6366f1" />
+              <StatCard label="Total Responses" value={a.totalResponses} icon="📋" color="var(--secondary)" />
               {form.type === 'quiz' && a.avgPercentage !== null && (
-                <StatCard label="Avg Score" value={`${a.avgPercentage}%`} icon="🎯" color="#10b981" />
+                <StatCard label="Avg Score" value={`${a.avgPercentage}%`} icon="🎯" color="var(--primary)" />
               )}
               {a.passRate !== null && (
-                <StatCard label="Pass Rate" value={`${a.passRate}%`} icon="✅" color="#f59e0b" />
+                <StatCard label="Pass Rate" value={`${a.passRate}%`} icon="✅" color="var(--accent)" />
               )}
               {a.avgTime && (
-                <StatCard label="Avg Time" value={`${Math.floor(a.avgTime / 60)}m ${a.avgTime % 60}s`} icon="⏱" color="#8b5cf6" />
+                <StatCard label="Avg Time" value={`${Math.floor(a.avgTime / 60)}m ${a.avgTime % 60}s`} icon="⏱" color="var(--primary-dark)" />
               )}
             </div>
 
@@ -168,7 +168,7 @@ export default function AnalyticsPage() {
                           <td style={{ padding: '10px 12px' }}>
                             {form.type === 'quiz' && r.percentage !== null ? (
                               <span style={{
-                                fontWeight: 700, color: r.percentage >= 60 ? '#10b981' : '#ef4444'
+                                fontWeight: 700, color: r.percentage >= 60 ? 'var(--secondary)' : 'var(--danger)'
                               }}>{r.percentage}%</span>
                             ) : (
                               <span className="badge badge-success">Submitted</span>

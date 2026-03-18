@@ -56,7 +56,7 @@ export function PageLoader() {
   );
 }
 
-export function StatCard({ label, value, icon, color = '#6366f1', trend }) {
+export function StatCard({ label, value, icon, color = 'var(--primary)', trend }) {
   return (
     <div className="card" style={{ padding: 20 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -64,7 +64,7 @@ export function StatCard({ label, value, icon, color = '#6366f1', trend }) {
           <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 6, fontWeight: 500 }}>{label}</p>
           <p style={{ fontSize: 28, fontWeight: 800, fontFamily: 'var(--font-display)' }}>{value}</p>
           {trend !== undefined && (
-            <p style={{ fontSize: 12, color: trend >= 0 ? '#10b981' : '#ef4444', marginTop: 4, fontWeight: 600 }}>
+            <p style={{ fontSize: 12, color: trend >= 0 ? 'var(--secondary)' : 'var(--danger)', marginTop: 4, fontWeight: 600 }}>
               {trend >= 0 ? '↑' : '↓'} {Math.abs(trend)}% vs last week
             </p>
           )}

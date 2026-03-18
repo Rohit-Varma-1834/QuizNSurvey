@@ -8,17 +8,17 @@ function AuthLayout({ children, title, subtitle, footer }) {
     <div style={{
       minHeight: '100vh', display: 'flex', background: 'var(--bg)',
       alignItems: 'center', justifyContent: 'center', padding: 24,
-      backgroundImage: 'radial-gradient(ellipse at 20% 50%, rgba(99,102,241,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(16,185,129,0.06) 0%, transparent 60%)'
+      backgroundImage: 'radial-gradient(ellipse at 20% 50%, rgba(var(--secondary-rgb),0.10) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(var(--primary-rgb),0.10) 0%, transparent 60%)'
     }}>
       <div style={{ width: '100%', maxWidth: 420 }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 32, justifyContent: 'center', textDecoration: 'none' }}>
-          <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
             </svg>
           </div>
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 20 }}>
-            Quizn<span style={{ color: '#6366f1' }}>Survey</span>
+            Quizn<span style={{ color: 'var(--primary)' }}>Survey</span>
           </span>
         </Link>
 
@@ -64,7 +64,7 @@ export function LoginPage() {
     >
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         {error && (
-          <div style={{ background: '#fee2e2', border: '1px solid #fca5a5', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#991b1b' }}>
+          <div style={{ background: 'var(--danger-soft)', border: '1px solid color-mix(in srgb, var(--danger) 28%, var(--bg-secondary) 72%)', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: 'var(--danger)' }}>
             {error}
           </div>
         )}
@@ -121,7 +121,7 @@ export function RegisterPage() {
     >
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {error && (
-          <div style={{ background: '#fee2e2', border: '1px solid #fca5a5', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#991b1b' }}>
+          <div style={{ background: 'var(--danger-soft)', border: '1px solid color-mix(in srgb, var(--danger) 28%, var(--bg-secondary) 72%)', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: 'var(--danger)' }}>
             {error}
           </div>
         )}

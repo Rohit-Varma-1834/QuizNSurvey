@@ -38,9 +38,9 @@ export default function ShareModal({ isOpen, onClose, form }) {
         {/* Status check */}
         {form.status !== 'published' && (
           <div style={{
-            background: '#fef3c7', border: '1px solid #fcd34d',
+            background: 'var(--warning-soft)', border: '1px solid color-mix(in srgb, var(--primary) 28%, var(--bg-secondary) 72%)',
             borderRadius: 10, padding: '12px 16px',
-            fontSize: 13, color: '#92400e'
+            fontSize: 13, color: 'var(--primary-dark)'
           }}>
             ⚠️ This form is not published yet. Publish it first so respondents can access it.
           </div>
@@ -49,7 +49,7 @@ export default function ShareModal({ isOpen, onClose, form }) {
         {/* QR Code */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <div style={{
-            padding: 20, background: 'white', borderRadius: 16,
+            padding: 20, background: 'var(--bg-elevated)', borderRadius: 16,
             border: '2px solid var(--border)',
             boxShadow: 'var(--shadow-md)'
           }}>
@@ -57,7 +57,7 @@ export default function ShareModal({ isOpen, onClose, form }) {
               id="qr-svg"
               value={publicUrl}
               size={180}
-              fgColor="#1e1b4b"
+              fgColor="#2b2d42"
               bgColor="#ffffff"
               level="H"
               includeMargin={false}
@@ -119,7 +119,7 @@ export default function ShareModal({ isOpen, onClose, form }) {
           </div>
           <div style={{ width: 1, background: 'var(--border)' }} />
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontWeight: 800, fontSize: 20, textTransform: 'capitalize', color: form.status === 'published' ? '#10b981' : 'var(--text-secondary)' }}>
+            <p style={{ fontWeight: 800, fontSize: 20, textTransform: 'capitalize', color: form.status === 'published' ? 'var(--secondary)' : 'var(--text-secondary)' }}>
               {form.status}
             </p>
             <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>Status</p>

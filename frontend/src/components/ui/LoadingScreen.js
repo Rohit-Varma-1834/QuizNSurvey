@@ -8,7 +8,7 @@ export default function LoadingScreen() {
     }}>
       <div style={{
         width: 48, height: 48, borderRadius: 14,
-        background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+        background: 'linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         animation: 'pulse 1.5s ease-in-out infinite'
       }}>

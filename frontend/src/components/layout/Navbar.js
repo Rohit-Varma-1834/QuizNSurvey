@@ -38,7 +38,7 @@ export default function Navbar() {
         <Link to={user ? '/dashboard' : '/'} style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <div style={{
             width: 34, height: 34, borderRadius: 10,
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            background: 'linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0
           }}>
@@ -86,7 +86,7 @@ export default function Navbar() {
               }}>
                 <div style={{
                   width: 28, height: 28, borderRadius: '50%',
-                  background: user.avatar ? `url(${user.avatar}) center/cover` : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                  background: user.avatar ? `url(${user.avatar}) center/cover` : 'linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: 'white', fontSize: 12, fontWeight: 700, flexShrink: 0
                 }}>
@@ -121,9 +121,9 @@ export default function Navbar() {
                     </Link>
                     <button onClick={() => { setProfileOpen(false); handleLogout(); }} style={{
                       display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
-                      borderRadius: 8, fontSize: 14, color: '#ef4444', width: '100%',
+                      borderRadius: 8, fontSize: 14, color: 'var(--danger)', width: '100%',
                       transition: 'background 0.15s'
-                    }} onMouseOver={e => e.currentTarget.style.background = '#fee2e2'}
+                    }} onMouseOver={e => e.currentTarget.style.background = 'var(--danger-soft)'}
                        onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
                       <HiOutlineLogout size={15} /> Logout
                     </button>

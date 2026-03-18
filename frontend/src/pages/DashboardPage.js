@@ -152,25 +152,25 @@ export default function DashboardPage() {
             label="Total Forms"
             value={statsLoading ? '…' : (stats?.stats?.totalForms ?? 0)}
             icon={<HiOutlineClipboardList />}
-            color="#6366f1"
+            color="var(--secondary)"
           />
           <StatCard
             label="Published"
             value={statsLoading ? '…' : (stats?.stats?.publishedForms ?? 0)}
             icon={<HiOutlineGlobe />}
-            color="#10b981"
+            color="var(--primary)"
           />
           <StatCard
             label="Total Responses"
             value={statsLoading ? '…' : (stats?.stats?.totalResponses ?? 0)}
             icon={<HiOutlineChartBar />}
-            color="#f59e0b"
+            color="var(--accent)"
           />
           <StatCard
             label="This Week"
             value={statsLoading ? '…' : (stats?.weeklyData?.reduce((s, d) => s + d.count, 0) ?? 0)}
             icon="📈"
-            color="#8b5cf6"
+            color="var(--primary-dark)"
           />
         </div>
 

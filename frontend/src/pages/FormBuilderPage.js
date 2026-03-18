@@ -12,7 +12,7 @@ import {
   HiOutlineTag, HiOutlineChatAlt2,
 } from 'react-icons/hi';
 
-const COVER_COLORS = ['#6366f1','#8b5cf6','#10b981','#06b6d4','#f59e0b','#ef4444','#f97316','#ec4899','#0ea5e9','#64748b'];
+const COVER_COLORS = ['#2b2d42', '#3f4a63', '#59647b', '#8d99ae', '#ef233c', '#d90429', '#c61f3b', '#b61331'];
 
 const newQuestion = (type = 'multiple_choice') => ({
   id: uuidv4(), type,
@@ -34,11 +34,11 @@ function TypeSelector({ onSelect }) {
 
           {/* QUIZ */}
           <button onClick={() => onSelect('quiz')} style={{ background: 'var(--bg-card)', border: '2px solid var(--border)', borderRadius: 22, padding: '36px 28px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.22s', outline: 'none' }}
-            onMouseOver={e => { e.currentTarget.style.borderColor = '#6366f1'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(99,102,241,0.18)'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
+            onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(239,35,60,0.18)'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
             onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none'; }}
           >
-            <div style={{ width: 68, height: 68, borderRadius: 20, background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, marginBottom: 20 }}>🧠</div>
-            <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 10, color: '#6366f1' }}>Quiz</h2>
+            <div style={{ width: 68, height: 68, borderRadius: 20, background: 'linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, marginBottom: 20 }}>🧠</div>
+            <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 10, color: 'var(--primary)' }}>Quiz</h2>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 20 }}>
               Test knowledge with right/wrong answers. Auto-grade responses, set timers, define passing scores, and show results instantly.
             </p>
@@ -47,18 +47,18 @@ function TypeSelector({ onSelect }) {
                 <span key={f} style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{f}</span>
               ))}
             </div>
-            <div style={{ marginTop: 24, background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white', borderRadius: 12, padding: '12px 18px', fontWeight: 700, fontSize: 14, textAlign: 'center', boxShadow: '0 4px 14px rgba(99,102,241,0.35)' }}>
+            <div style={{ marginTop: 24, background: 'linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%)', color: 'white', borderRadius: 12, padding: '12px 18px', fontWeight: 700, fontSize: 14, textAlign: 'center', boxShadow: '0 4px 14px rgba(239,35,60,0.28)' }}>
               🧠 Create Quiz →
             </div>
           </button>
 
           {/* SURVEY */}
           <button onClick={() => onSelect('survey')} style={{ background: 'var(--bg-card)', border: '2px solid var(--border)', borderRadius: 22, padding: '36px 28px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.22s', outline: 'none' }}
-            onMouseOver={e => { e.currentTarget.style.borderColor = '#10b981'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(16,185,129,0.18)'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
+            onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--secondary)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(43,45,66,0.18)'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
             onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none'; }}
           >
-            <div style={{ width: 68, height: 68, borderRadius: 20, background: 'linear-gradient(135deg, #10b981, #06b6d4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, marginBottom: 20 }}>📋</div>
-            <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 10, color: '#10b981' }}>Survey</h2>
+            <div style={{ width: 68, height: 68, borderRadius: 20, background: 'linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, marginBottom: 20 }}>📋</div>
+            <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 10, color: 'var(--secondary)' }}>Survey</h2>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 20 }}>
               Collect opinions, feedback, and data. No right or wrong answers. Perfect for research, feedback forms, polls, and event check-ins.
             </p>
@@ -67,7 +67,7 @@ function TypeSelector({ onSelect }) {
                 <span key={f} style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{f}</span>
               ))}
             </div>
-            <div style={{ marginTop: 24, background: 'linear-gradient(135deg, #10b981, #06b6d4)', color: 'white', borderRadius: 12, padding: '12px 18px', fontWeight: 700, fontSize: 14, textAlign: 'center', boxShadow: '0 4px 14px rgba(16,185,129,0.35)' }}>
+            <div style={{ marginTop: 24, background: 'linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%)', color: 'white', borderRadius: 12, padding: '12px 18px', fontWeight: 700, fontSize: 14, textAlign: 'center', boxShadow: '0 4px 14px rgba(43,45,66,0.24)' }}>
               📋 Create Survey →
             </div>
           </button>
@@ -82,8 +82,8 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
   const navigate = useNavigate();
   const isEdit = Boolean(formId);
   const isQuiz = type === 'quiz';
-  const accent = isQuiz ? '#6366f1' : '#10b981';
-  const lightBg = isQuiz ? '#ede9fe' : '#d1fae5';
+  const accent = isQuiz ? '#ef233c' : '#2b2d42';
+  const lightBg = isQuiz ? 'var(--primary-light)' : 'var(--success-soft)';
   const label = isQuiz ? '🧠 Quiz' : '📋 Survey';
 
   const [saving, setSaving] = useState(false);
@@ -158,7 +158,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
             />
           </div>
           <div style={{ background: lightBg, color: accent, borderRadius:8, padding:'5px 14px', fontSize:13, fontWeight:700 }}>{label}</div>
-          <span style={{ fontSize:11, fontWeight:700, padding:'3px 10px', borderRadius:6, textTransform:'uppercase', background: form.status==='published'?'#d1fae5':'var(--bg-secondary)', color: form.status==='published'?'#065f46':'var(--text-muted)' }}>
+          <span style={{ fontSize:11, fontWeight:700, padding:'3px 10px', borderRadius:6, textTransform:'uppercase', background: form.status==='published'?'var(--success-soft)':'var(--bg-secondary)', color: form.status==='published'?'var(--secondary)':'var(--text-muted)' }}>
             {form.status || 'draft'}
           </span>
           <button onClick={handleSave} disabled={saving} className="btn btn-secondary btn-sm">
@@ -214,7 +214,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
                 </div>
               </div>
 
-              {errors.questions && <div style={{ background:'#fee2e2', border:'1px solid #fca5a5', borderRadius:8, padding:'10px 16px', fontSize:13, color:'#991b1b' }}>⚠️ {errors.questions}</div>}
+              {errors.questions && <div style={{ background:'var(--danger-soft)', border:'1px solid color-mix(in srgb, var(--danger) 28%, var(--bg-secondary) 72%)', borderRadius:8, padding:'10px 16px', fontSize:13, color:'var(--danger)' }}>⚠️ {errors.questions}</div>}
 
               {/* Empty state */}
               {form.questions.length === 0 && (
@@ -398,7 +398,7 @@ export default function FormBuilderPage() {
 
   const defaultForm = (type) => ({
     title:'', description:'', category: type==='quiz' ? 'education' : 'feedback',
-    coverColor: type==='quiz' ? '#6366f1' : '#10b981',
+    coverColor: type==='quiz' ? '#ef233c' : '#2b2d42',
     questions:[], tags:'', expiresAt:'', status:'draft',
     settings: type==='quiz'
       ? { showScore:true, showCorrectAnswers:false, shuffleQuestions:false, timeLimit:'', passingScore:'', allowMultipleResponses:false, showProgressBar:true, confirmationMessage:'Great work! Your quiz has been submitted.' }

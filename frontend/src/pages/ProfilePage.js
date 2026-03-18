@@ -95,7 +95,7 @@ export default function ProfilePage() {
             <div style={{ position: 'relative' }}>
               <div style={{
                 width: 72, height: 72, borderRadius: '50%',
-                background: user?.avatar ? `url(${user.avatar}) center/cover` : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                background: user?.avatar ? `url(${user.avatar}) center/cover` : 'linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: 'white', fontSize: 26, fontWeight: 800
               }}>
@@ -175,8 +175,8 @@ export default function ProfilePage() {
         </div>
 
         {/* Danger zone */}
-        <div className="card" style={{ padding: '24px', border: '1px solid #fca5a5' }}>
-          <h3 style={{ fontSize: 15, fontWeight: 700, color: '#dc2626', marginBottom: 8 }}>⚠️ Danger Zone</h3>
+        <div className="card" style={{ padding: '24px', border: '1px solid color-mix(in srgb, var(--danger) 28%, var(--bg-secondary) 72%)' }}>
+          <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--danger)', marginBottom: 8 }}>⚠️ Danger Zone</h3>
           <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
             Permanently delete your account and all your forms and responses. This cannot be undone.
           </p>
