@@ -96,8 +96,8 @@ export default function LandingPage() {
           </div>
           <div style={{ padding: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16 }}>
             {[
-              { label: 'Total Forms', value: '24', color: '#0004ff' },
-              { label: 'Responses', value: '1,847', color: '#10b981' },
+              { label: 'Total Forms', value: '24', color: '#ff0000' },
+              { label: 'Responses', value: '1,847', color: '#ffe600' },
               { label: 'Avg Score', value: '78%', color: '#f59e0b' },
               { label: 'Published', value: '18', color: '#8b5cf6' },
             ].map(s => (
