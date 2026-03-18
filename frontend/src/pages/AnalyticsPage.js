@@ -12,7 +12,7 @@ import { HiOutlineArrowLeft, HiOutlineEye, HiOutlineRefresh } from 'react-icons/
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler);
 
-const CHART_COLORS = ['#2b2d42', '#8d99ae', '#ef233c', '#d90429', '#5c6578', '#c8d0dc', '#a3afc1', '#f3a7b2'];
+const CHART_COLORS = ['#161a1d', '#660708', '#a4161a', '#ba181b', '#e5383b', '#b1a7a6', '#d3d3d3', '#f5f3f4'];
 
 export default function AnalyticsPage() {
   const { id } = useParams();
@@ -45,12 +45,12 @@ export default function AnalyticsPage() {
       label: 'Responses',
       data: (a.dailyResponses || []).map(d => d.count),
       fill: true,
-      backgroundColor: 'rgba(239,35,60,0.12)',
-      borderColor: '#ef233c',
+      backgroundColor: 'rgba(186,24,27,0.12)',
+      borderColor: '#ba181b',
       borderWidth: 2.5,
       tension: 0.4,
       pointRadius: 4,
-      pointBackgroundColor: '#ef233c',
+      pointBackgroundColor: '#ba181b',
     }]
   };
 

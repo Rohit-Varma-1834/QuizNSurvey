@@ -57,7 +57,7 @@ export default function ShareModal({ isOpen, onClose, form }) {
               id="qr-svg"
               value={publicUrl}
               size={180}
-              fgColor="#2b2d42"
+              fgColor="#161a1d"
               bgColor="#ffffff"
               level="H"
               includeMargin={false}

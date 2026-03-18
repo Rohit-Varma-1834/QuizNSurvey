@@ -12,7 +12,7 @@ import {
   HiOutlineTag, HiOutlineChatAlt2,
 } from 'react-icons/hi';
 
-const COVER_COLORS = ['#2b2d42', '#3f4a63', '#59647b', '#8d99ae', '#ef233c', '#d90429', '#c61f3b', '#b61331'];
+const COVER_COLORS = ['#0b090a', '#161a1d', '#660708', '#a4161a', '#ba181b', '#e5383b', '#b1a7a6', '#d3d3d3'];
 
 const newQuestion = (type = 'multiple_choice') => ({
   id: uuidv4(), type,
@@ -82,7 +82,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
   const navigate = useNavigate();
   const isEdit = Boolean(formId);
   const isQuiz = type === 'quiz';
-  const accent = isQuiz ? '#ef233c' : '#2b2d42';
+  const accent = isQuiz ? '#ba181b' : '#161a1d';
   const lightBg = isQuiz ? 'var(--primary-light)' : 'var(--success-soft)';
   const label = isQuiz ? '🧠 Quiz' : '📋 Survey';
 
@@ -398,7 +398,7 @@ export default function FormBuilderPage() {
 
   const defaultForm = (type) => ({
     title:'', description:'', category: type==='quiz' ? 'education' : 'feedback',
-    coverColor: type==='quiz' ? '#ef233c' : '#2b2d42',
+    coverColor: type==='quiz' ? '#ba181b' : '#161a1d',
     questions:[], tags:'', expiresAt:'', status:'draft',
     settings: type==='quiz'
       ? { showScore:true, showCorrectAnswers:false, shuffleQuestions:false, timeLimit:'', passingScore:'', allowMultipleResponses:false, showProgressBar:true, confirmationMessage:'Great work! Your quiz has been submitted.' }
