@@ -60,6 +60,13 @@ export default function FormResponsePage() {
 
   const validate = () => {
     const errs = {};
+    const name = meta.name.trim();
+    const email = meta.email.trim();
+
+    if (!name) errs.name = 'Name is required';
+    if (!email) errs.email = 'Email is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = 'Enter a valid email address';
+
     (form?.questions || []).forEach(q => {
       if (!q.required) return;
       const ans = answers[q.id];
@@ -78,9 +85,9 @@ export default function FormResponsePage() {
     try {
       const payload = {
         answers: Object.entries(answers).map(([questionId, answer]) => ({ questionId, answer })),
-        respondentName: meta.name || 'Anonymous',
-        respondentEmail: meta.email || null,
-        isAnonymous: form.settings?.allowAnonymous,
+        respondentName: meta.name.trim(),
+        respondentEmail: meta.email.trim(),
+        isAnonymous: false,
         timeTaken: Math.round((Date.now() - startTime) / 1000),
       };
       const { data } = await api.post(`/api/responses/submit/${publicId}`, payload);
@@ -197,22 +204,41 @@ export default function FormResponsePage() {
       )}
 
       <div style={{ maxWidth: 700, margin: '0 auto', padding: '32px 24px' }}>
-        {/* Respondent info (if not anonymous) */}
-        {!form.settings?.allowAnonymous && (
-          <div className="card" style={{ padding: '20px 22px', marginBottom: 20 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 14 }}>Your Information</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-              <div className="form-group">
-                <label className="form-label">Name</label>
-                <input className="form-input" placeholder="Your name" value={meta.name} onChange={e => setMeta(m => ({ ...m, name: e.target.value }))} />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Email (optional)</label>
-                <input className="form-input" type="email" placeholder="your@email.com" value={meta.email} onChange={e => setMeta(m => ({ ...m, email: e.target.value }))} />
-              </div>
+        {/* Respondent info */}
+        <div className="card" style={{ padding: '20px 22px', marginBottom: 20 }}>
+          <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 14 }}>Your Information</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div className="form-group">
+              <label className="form-label">Name *</label>
+              <input
+                className="form-input"
+                placeholder="Your full name"
+                value={meta.name}
+                onChange={e => {
+                  const value = e.target.value;
+                  setMeta(m => ({ ...m, name: value }));
+                  setValidationErrors(v => ({ ...v, name: '' }));
+                }}
+              />
+              {validationErrors.name && <p className="form-error">{validationErrors.name}</p>}
+            </div>
+            <div className="form-group">
+              <label className="form-label">Email *</label>
+              <input
+                className="form-input"
+                type="email"
+                placeholder="your@email.com"
+                value={meta.email}
+                onChange={e => {
+                  const value = e.target.value;
+                  setMeta(m => ({ ...m, email: value }));
+                  setValidationErrors(v => ({ ...v, email: '' }));
+                }}
+              />
+              {validationErrors.email && <p className="form-error">{validationErrors.email}</p>}
             </div>
           </div>
-        )}
+        </div>
 
         {/* Questions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
