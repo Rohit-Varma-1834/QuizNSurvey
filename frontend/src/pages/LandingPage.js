@@ -32,21 +32,21 @@ export default function LandingPage() {
       {/* Hero */}
       <section style={{
         padding: '80px 24px 100px',
-        background: 'linear-gradient(160deg, rgba(var(--bg-rgb), 1) 0%, rgba(var(--bg-rgb), 0.96) 46%, rgba(var(--primary-rgb), 0.08) 100%)',
+        background: 'linear-gradient(160deg, rgba(var(--bg-rgb), 0.96) 0%, rgba(255,255,255,0.92) 38%, rgba(var(--secondary-rgb), 0.13) 100%)',
         textAlign: 'center', position: 'relative', overflow: 'hidden'
       }}>
         {/* Background orbs */}
-        <div style={{ position: 'absolute', top: -100, left: '10%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(var(--secondary-rgb),0.16) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: -80, right: '10%', width: 350, height: 350, borderRadius: '50%', background: 'radial-gradient(circle, rgba(var(--primary-rgb),0.14) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: -100, left: '10%', width: 420, height: 420, borderRadius: '50%', background: 'radial-gradient(circle, rgba(var(--primary-rgb),0.22) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: -80, right: '10%', width: 380, height: 380, borderRadius: '50%', background: 'radial-gradient(circle, rgba(var(--secondary-rgb),0.22) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
         <div style={{ maxWidth: 760, margin: '0 auto', position: 'relative' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: 'var(--bg-elevated)', border: '1px solid var(--border)',
+            background: 'rgba(255,255,255,0.72)', border: '1px solid rgba(var(--primary-rgb),0.14)',
             borderRadius: 99, padding: '6px 16px', marginBottom: 28,
             boxShadow: 'var(--shadow-sm)', fontSize: 13, fontWeight: 600, color: 'var(--primary)'
           }}>
-            <span style={{ background: 'var(--success-soft)', color: 'var(--secondary)', borderRadius: 99, padding: '1px 8px', fontSize: 11 }}>NEW</span>
+            <span style={{ background: 'var(--brand-gradient)', color: 'white', borderRadius: 99, padding: '1px 8px', fontSize: 11 }}>NEW</span>
             QR Code sharing now available 🎉
           </div>
 
@@ -55,7 +55,7 @@ export default function LandingPage() {
             fontFamily: 'var(--font-display)',
             fontWeight: 800, lineHeight: 1.1,
             marginBottom: 24,
-            background: 'linear-gradient(135deg, var(--secondary) 0%, var(--primary) 52%, var(--accent) 100%)',
+            background: 'var(--brand-gradient)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
           }}>
@@ -84,11 +84,11 @@ export default function LandingPage() {
         {/* Mock dashboard preview */}
         <div style={{
           maxWidth: 900, margin: '60px auto 0',
-          background: 'var(--bg-card)', borderRadius: 20,
-          border: '1px solid var(--border)', boxShadow: '0 24px 80px rgba(0,0,0,0.12)',
+          background: 'rgba(255,255,255,0.9)', borderRadius: 20,
+          border: '1px solid rgba(var(--primary-rgb),0.14)', boxShadow: '0 24px 80px rgba(0,40,120,0.16)',
           overflow: 'hidden', animation: 'fadeInUp 0.8s ease'
         }}>
-          <div style={{ background: 'var(--bg-secondary)', padding: '12px 16px', display: 'flex', gap: 6 }}>
+          <div style={{ background: 'var(--brand-gradient-soft)', padding: '12px 16px', display: 'flex', gap: 6 }}>
             {['var(--danger)', 'var(--accent)', 'var(--secondary)'].map(c => (
               <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
             ))}
@@ -101,7 +101,7 @@ export default function LandingPage() {
               { label: 'Avg Score', value: '78%', color: 'var(--accent)' },
               { label: 'Published', value: '18', color: 'var(--primary-dark)' },
             ].map(s => (
-              <div key={s.label} style={{ background: 'var(--bg-secondary)', borderRadius: 12, padding: '16px 20px' }}>
+              <div key={s.label} style={{ background: 'var(--brand-gradient-soft)', borderRadius: 12, padding: '16px 20px' }}>
                 <p style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</p>
                 <p style={{ fontSize: 26, fontWeight: 800, color: s.color, fontFamily: 'var(--font-display)' }}>{s.value}</p>
               </div>
@@ -111,7 +111,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section id="features" style={{ padding: '80px 24px' }}>
+      <section id="features" style={{ padding: '80px 24px', position: 'relative' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 52 }}>
             <h2 style={{ fontSize: 'clamp(28px, 4vw, 40px)', marginBottom: 14 }}>Everything you need to collect insights</h2>
@@ -132,7 +132,7 @@ export default function LandingPage() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" style={{ padding: '80px 24px', background: 'var(--bg-secondary)' }}>
+      <section id="how-it-works" style={{ padding: '80px 24px', background: 'var(--brand-gradient-soft)' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 52 }}>
             <h2 style={{ fontSize: 'clamp(28px, 4vw, 40px)', marginBottom: 14 }}>Up and running in minutes</h2>
@@ -142,7 +142,7 @@ export default function LandingPage() {
               <div key={i} style={{ textAlign: 'center' }}>
                 <div style={{
                   width: 56, height: 56, borderRadius: 16,
-                  background: 'linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%)',
+                  background: 'var(--brand-gradient)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   margin: '0 auto 16px',
                   fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 800, color: 'white'
@@ -185,7 +185,7 @@ export default function LandingPage() {
       {/* CTA */}
       <section style={{
         padding: '80px 24px',
-        background: 'linear-gradient(135deg, var(--secondary) 0%, var(--primary-dark) 100%)',
+        background: 'var(--brand-gradient)',
         textAlign: 'center'
       }}>
         <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: 'white', marginBottom: 16 }}>
@@ -194,13 +194,13 @@ export default function LandingPage() {
         <p style={{ color: 'rgba(255,255,255,0.76)', fontSize: 17, marginBottom: 36 }}>
           Join thousands of creators who trust QuiznSurvey.
         </p>
-        <Link to="/register" className="btn btn-xl" style={{ background: 'var(--bg-elevated)', color: 'var(--secondary)', fontWeight: 700, boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
+        <Link to="/register" className="btn btn-xl" style={{ background: 'rgba(255,255,255,0.96)', color: 'var(--primary)', fontWeight: 700, boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
           Create Your First Form — Free
         </Link>
       </section>
 
       {/* Footer */}
-      <footer style={{ padding: '32px 24px', background: 'var(--secondary)', textAlign: 'center' }}>
+      <footer style={{ padding: '32px 24px', background: 'linear-gradient(135deg, rgba(var(--primary-rgb),0.96) 0%, rgba(var(--secondary-rgb),0.82) 100%)', textAlign: 'center' }}>
         <p style={{ color: 'rgba(237,242,244,0.72)', fontSize: 14 }}>
           © {new Date().getFullYear()} QuiznSurvey. Built with ❤️ for creators everywhere.
         </p>
