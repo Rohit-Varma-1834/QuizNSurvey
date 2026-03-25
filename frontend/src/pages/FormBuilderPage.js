@@ -12,7 +12,7 @@ import {
   HiOutlineTag, HiOutlineChatAlt2,
 } from 'react-icons/hi';
 
-const COVER_COLORS = ['#0b090a', '#161a1d', '#660708', '#a4161a', '#ba181b', '#e5383b', '#b1a7a6', '#d3d3d3'];
+const COVER_COLORS = ['#0000FF', '#00FF00', '#00C8A7', '#6C63FF', '#FF6B6B', '#FF9F1C', '#0F172A', '#F43F5E'];
 
 const newQuestion = (type = 'multiple_choice') => ({
   id: uuidv4(), type,
@@ -34,10 +34,10 @@ function TypeSelector({ onSelect }) {
 
           {/* QUIZ */}
           <button onClick={() => onSelect('quiz')} style={{ background: 'var(--bg-card)', border: '2px solid var(--border)', borderRadius: 22, padding: '36px 28px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.22s', outline: 'none' }}
-            onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(239,35,60,0.18)'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
+            onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(var(--primary-rgb),0.18)'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
             onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none'; }}
           >
-            <div style={{ width: 68, height: 68, borderRadius: 20, background: 'linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, marginBottom: 20 }}>🧠</div>
+            <div style={{ width: 68, height: 68, borderRadius: 20, background: 'var(--brand-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, marginBottom: 20, boxShadow: '0 12px 28px rgba(var(--primary-rgb),0.2)' }}>🧠</div>
             <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 10, color: 'var(--primary)' }}>Quiz</h2>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 20 }}>
               Test knowledge with right/wrong answers. Auto-grade responses, set timers, define passing scores, and show results instantly.
@@ -47,18 +47,18 @@ function TypeSelector({ onSelect }) {
                 <span key={f} style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{f}</span>
               ))}
             </div>
-            <div style={{ marginTop: 24, background: 'linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%)', color: 'white', borderRadius: 12, padding: '12px 18px', fontWeight: 700, fontSize: 14, textAlign: 'center', boxShadow: '0 4px 14px rgba(239,35,60,0.28)' }}>
+            <div style={{ marginTop: 24, background: 'var(--brand-gradient)', color: 'white', borderRadius: 12, padding: '12px 18px', fontWeight: 700, fontSize: 14, textAlign: 'center', boxShadow: '0 10px 24px rgba(var(--primary-rgb),0.24)' }}>
               🧠 Create Quiz →
             </div>
           </button>
 
           {/* SURVEY */}
           <button onClick={() => onSelect('survey')} style={{ background: 'var(--bg-card)', border: '2px solid var(--border)', borderRadius: 22, padding: '36px 28px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.22s', outline: 'none' }}
-            onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--secondary)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(43,45,66,0.18)'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
+            onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--secondary)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(var(--secondary-rgb),0.18)'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
             onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none'; }}
           >
-            <div style={{ width: 68, height: 68, borderRadius: 20, background: 'linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, marginBottom: 20 }}>📋</div>
-            <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 10, color: 'var(--secondary)' }}>Survey</h2>
+            <div style={{ width: 68, height: 68, borderRadius: 20, background: 'var(--brand-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 34, marginBottom: 20, boxShadow: '0 12px 28px rgba(var(--secondary-rgb),0.2)' }}>📋</div>
+            <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 10, color: 'var(--secondary-dark)' }}>Survey</h2>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 20 }}>
               Collect opinions, feedback, and data. No right or wrong answers. Perfect for research, feedback forms, polls, and event check-ins.
             </p>
@@ -67,7 +67,7 @@ function TypeSelector({ onSelect }) {
                 <span key={f} style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{f}</span>
               ))}
             </div>
-            <div style={{ marginTop: 24, background: 'linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%)', color: 'white', borderRadius: 12, padding: '12px 18px', fontWeight: 700, fontSize: 14, textAlign: 'center', boxShadow: '0 4px 14px rgba(43,45,66,0.24)' }}>
+            <div style={{ marginTop: 24, background: 'var(--brand-gradient)', color: 'white', borderRadius: 12, padding: '12px 18px', fontWeight: 700, fontSize: 14, textAlign: 'center', boxShadow: '0 10px 24px rgba(var(--primary-rgb),0.24)' }}>
               📋 Create Survey →
             </div>
           </button>
@@ -82,8 +82,8 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
   const navigate = useNavigate();
   const isEdit = Boolean(formId);
   const isQuiz = type === 'quiz';
-  const accent = isQuiz ? '#ba181b' : '#161a1d';
-  const lightBg = isQuiz ? 'var(--primary-light)' : 'var(--success-soft)';
+  const accent = 'var(--primary)';
+  const lightBg = 'var(--brand-gradient-soft)';
   const label = isQuiz ? '🧠 Quiz' : '📋 Survey';
 
   const [saving, setSaving] = useState(false);
@@ -157,7 +157,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
               style={{ border:'none', background:'transparent', fontSize:17, fontWeight:700, width:'100%', color:'var(--text-primary)', outline:'none', fontFamily:'var(--font-display)', borderBottom: errors.title ? '2px solid var(--danger)' : '2px solid transparent', paddingBottom:2 }}
             />
           </div>
-          <div style={{ background: lightBg, color: accent, borderRadius:8, padding:'5px 14px', fontSize:13, fontWeight:700 }}>{label}</div>
+          <div style={{ background: 'var(--brand-gradient)', color: 'white', borderRadius:8, padding:'5px 14px', fontSize:13, fontWeight:700, boxShadow: '0 8px 18px rgba(var(--primary-rgb),0.18)' }}>{label}</div>
           <span style={{ fontSize:11, fontWeight:700, padding:'3px 10px', borderRadius:6, textTransform:'uppercase', background: form.status==='published'?'var(--success-soft)':'var(--bg-secondary)', color: form.status==='published'?'var(--secondary)':'var(--text-muted)' }}>
             {form.status || 'draft'}
           </span>
@@ -165,7 +165,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
             <HiOutlineSave size={15}/> {saving ? 'Saving…' : 'Save'}
           </button>
           {isEdit && (
-            <button onClick={handlePublish} disabled={publishing} className="btn btn-sm" style={{ background: accent, color:'white' }}>
+            <button onClick={handlePublish} disabled={publishing} className="btn btn-sm" style={{ background: 'var(--brand-gradient)', color:'white' }}>
               <HiOutlineGlobe size={15}/> {publishing ? '…' : form.status==='published' ? 'Unpublish' : 'Publish'}
             </button>
           )}
@@ -189,7 +189,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
           {activeTab === 'questions' && (
             <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
               {/* Meta card */}
-              <div className="card" style={{ padding:'20px 22px', borderLeft:`4px solid ${accent}` }}>
+              <div className="card" style={{ padding:'20px 22px', borderLeft:`4px solid var(--primary)` }}>
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
                   <div className="form-group" style={{ gridColumn:'1/-1' }}>
                     <label className="form-label">Description</label>
@@ -207,7 +207,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
                     <label className="form-label">Cover Color</label>
                     <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginTop:4 }}>
                       {COVER_COLORS.map(c=>(
-                        <button key={c} onClick={()=>setForm(f=>({...f,coverColor:c}))} style={{ width:26, height:26, borderRadius:7, background:c, border:'none', cursor:'pointer', boxShadow: form.coverColor===c ? `0 0 0 3px white, 0 0 0 5px ${c}` : 'none', transition:'all 0.15s' }}/>
+                        <button key={c} onClick={()=>setForm(f=>({...f,coverColor:c}))} title={c} style={{ width:28, height:28, borderRadius:9, background:c, border:'1px solid rgba(255,255,255,0.75)', cursor:'pointer', boxShadow: form.coverColor===c ? `0 0 0 3px white, 0 0 0 5px ${c}` : '0 6px 14px rgba(15,23,42,0.12)', transition:'all 0.15s' }}/>
                       ))}
                     </div>
                   </div>
@@ -218,7 +218,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
 
               {/* Empty state */}
               {form.questions.length === 0 && (
-                <div style={{ textAlign:'center', padding:'52px 24px', borderRadius:16, border:`2px dashed ${accent}40`, background: lightBg+'30' }}>
+                <div style={{ textAlign:'center', padding:'52px 24px', borderRadius:16, border:`2px dashed color-mix(in srgb, var(--primary) 35%, transparent)`, background: 'color-mix(in srgb, var(--brand-gradient-soft) 70%, transparent)' }}>
                   <p style={{ fontSize:40, marginBottom:10 }}>{isQuiz ? '🧠' : '📋'}</p>
                   <h3 style={{ marginBottom:6 }}>No questions yet</h3>
                   <p style={{ color:'var(--text-secondary)', fontSize:13, marginBottom:20 }}>Click a question type on the right to add your first question</p>
@@ -248,7 +248,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
 
               {/* QUIZ specific settings */}
               {isQuiz && (
-                <div className="card" style={{ padding:'22px 24px', borderLeft:`4px solid ${accent}` }}>
+                <div className="card" style={{ padding:'22px 24px', borderLeft:`4px solid var(--primary)` }}>
                   <h3 style={{ fontSize:15, fontWeight:700, marginBottom:18, display:'flex', alignItems:'center', gap:8 }}><HiOutlineCheckCircle color={accent}/> Scoring & Timer</h3>
                   <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14, marginBottom:16 }}>
                     <div className="form-group">
@@ -269,7 +269,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
                       {key:'showProgressBar', label:'📶 Show progress bar'},
                     ].map(opt=>(
                       <label key={opt.key} style={{ display:'flex', alignItems:'center', gap:10, cursor:'pointer', fontSize:14, padding:'9px 12px', borderRadius:8, border:'1px solid var(--border)', background: form.settings[opt.key] ? lightBg : 'transparent' }}>
-                        <input type="checkbox" checked={!!form.settings[opt.key]} onChange={e=>setForm(f=>({...f,settings:{...f.settings,[opt.key]:e.target.checked}}))} style={{ accentColor:accent }}/>
+                        <input type="checkbox" checked={!!form.settings[opt.key]} onChange={e=>setForm(f=>({...f,settings:{...f.settings,[opt.key]:e.target.checked}}))} style={{ accentColor:'var(--primary)' }}/>
                         {opt.label}
                       </label>
                     ))}
@@ -279,7 +279,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
 
               {/* SURVEY specific settings */}
               {!isQuiz && (
-                <div className="card" style={{ padding:'22px 24px', borderLeft:`4px solid ${accent}` }}>
+                <div className="card" style={{ padding:'22px 24px', borderLeft:`4px solid var(--primary)` }}>
                   <h3 style={{ fontSize:15, fontWeight:700, marginBottom:18, display:'flex', alignItems:'center', gap:8 }}><HiOutlineShieldCheck color={accent}/> Privacy & Access</h3>
                   <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                     {[
@@ -288,7 +288,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
                       {key:'showProgressBar', label:'📶 Show progress bar to respondents'},
                     ].map(opt=>(
                       <label key={opt.key} style={{ display:'flex', alignItems:'center', gap:10, cursor:'pointer', fontSize:14, padding:'10px 14px', borderRadius:8, border:'1px solid var(--border)', background: form.settings[opt.key] ? lightBg : 'transparent' }}>
-                        <input type="checkbox" checked={!!form.settings[opt.key]} onChange={e=>setForm(f=>({...f,settings:{...f.settings,[opt.key]:e.target.checked}}))} style={{ accentColor:accent }}/>
+                        <input type="checkbox" checked={!!form.settings[opt.key]} onChange={e=>setForm(f=>({...f,settings:{...f.settings,[opt.key]:e.target.checked}}))} style={{ accentColor:'var(--primary)' }}/>
                         {opt.label}
                       </label>
                     ))}
@@ -323,7 +323,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
 
         {/* RIGHT PANEL */}
         <div style={{ position:'sticky', top:120, alignSelf:'flex-start' }}>
-          <div className="card" style={{ padding:18, borderTop:`3px solid ${accent}`, overflow:'hidden' }}>
+          <div className="card" style={{ padding:18, borderTop:`3px solid var(--primary)`, overflow:'hidden' }}>
             <p style={{ fontSize:13, fontWeight:700, marginBottom:12, color:'var(--text-secondary)', textTransform:'uppercase', letterSpacing:'0.05em' }}>
               + Add Question
             </p>
@@ -334,7 +334,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
                   borderRadius:8, border:`1.5px solid var(--border)`, background:'var(--bg-card)',
                   cursor:'pointer', textAlign:'left', transition:'all 0.15s', width:'100%'
                 }}
-                  onMouseOver={e=>{ e.currentTarget.style.borderColor=accent; e.currentTarget.style.background=lightBg; }}
+                  onMouseOver={e=>{ e.currentTarget.style.borderColor='var(--primary)'; e.currentTarget.style.background=lightBg; }}
                   onMouseOut={e=>{ e.currentTarget.style.borderColor='var(--border)'; e.currentTarget.style.background='var(--bg-card)'; }}
                 >
                   <span style={{ fontSize:18, width:28, textAlign:'center', flexShrink:0 }}>{qt.icon}</span>
@@ -349,14 +349,14 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
             {/* Summary box */}
             {form.questions.length > 0 && (
               <div style={{ marginTop:16, padding:14, background:lightBg, borderRadius:12 }}>
-                <p style={{ fontSize:12, fontWeight:700, color:accent, marginBottom:8 }}>{isQuiz ? '🧠 Quiz Summary' : '📋 Survey Summary'}</p>
+                <p style={{ fontSize:12, fontWeight:700, color:'var(--primary)', marginBottom:8 }}>{isQuiz ? '🧠 Quiz Summary' : '📋 Survey Summary'}</p>
                 <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
                   <p style={{ fontSize:13, color:'var(--text-secondary)', margin:0 }}>📝 {form.questions.length} question{form.questions.length!==1?'s':''}</p>
                   {isQuiz && <p style={{ fontSize:13, color:'var(--text-secondary)', margin:0 }}>⭐ {totalPoints} total points</p>}
                   {!isQuiz && <p style={{ fontSize:13, color:'var(--text-secondary)', margin:0 }}>❗ {form.questions.filter(q=>q.required).length} required</p>}
                   {form.settings.timeLimit && <p style={{ fontSize:13, color:'var(--text-secondary)', margin:0 }}>⏱️ {form.settings.timeLimit} min limit</p>}
                   {form.settings.passingScore && <p style={{ fontSize:13, color:'var(--text-secondary)', margin:0 }}>🎯 Pass at {form.settings.passingScore}%</p>}
-                  {form.settings.allowAnonymous && <p style={{ fontSize:13, color:accent, margin:0 }}>🕵️ Anonymous mode on</p>}
+                  {form.settings.allowAnonymous && <p style={{ fontSize:13, color:'var(--primary)', margin:0 }}>🕵️ Anonymous mode on</p>}
                   {form.expiresAt && <p style={{ fontSize:13, color:'var(--text-secondary)', margin:0 }}>📅 Closes {form.expiresAt}</p>}
                 </div>
               </div>
@@ -398,7 +398,7 @@ export default function FormBuilderPage() {
 
   const defaultForm = (type) => ({
     title:'', description:'', category: type==='quiz' ? 'education' : 'feedback',
-    coverColor: type==='quiz' ? '#ba181b' : '#161a1d',
+    coverColor: type==='quiz' ? '#0000FF' : '#00C8A7',
     questions:[], tags:'', expiresAt:'', status:'draft',
     settings: type==='quiz'
       ? { showScore:true, showCorrectAnswers:false, shuffleQuestions:false, timeLimit:'', passingScore:'', allowMultipleResponses:false, showProgressBar:true, confirmationMessage:'Great work! Your quiz has been submitted.' }
