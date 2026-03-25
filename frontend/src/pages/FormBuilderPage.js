@@ -158,7 +158,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
             />
           </div>
           <div style={{ background: 'var(--brand-gradient)', color: 'white', borderRadius:8, padding:'5px 14px', fontSize:13, fontWeight:700, boxShadow: '0 8px 18px rgba(var(--primary-rgb),0.18)' }}>{label}</div>
-          <span style={{ fontSize:11, fontWeight:700, padding:'3px 10px', borderRadius:6, textTransform:'uppercase', background: form.status==='published'?'var(--success-soft)':'var(--bg-secondary)', color: form.status==='published'?'#128a41':'var(--text-muted)' }}>
+          <span style={{ fontSize:11, fontWeight:700, padding:'3px 10px', borderRadius:6, textTransform:'uppercase', background:'var(--bg-secondary)', color: form.status==='published'?'#128a41':'var(--text-muted)' }}>
             {form.status || 'draft'}
           </span>
           <button onClick={handleSave} disabled={saving} className="btn btn-secondary btn-sm">
