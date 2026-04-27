@@ -1,3 +1,4 @@
+// Shows the share link and QR code for a form.
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import Modal from '../ui/Modal';

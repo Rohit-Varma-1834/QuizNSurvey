@@ -1,3 +1,4 @@
+// Defines the database schema for user accounts.
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 

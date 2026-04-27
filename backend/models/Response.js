@@ -1,3 +1,4 @@
+// Defines the database schema for submitted form responses.
 const mongoose = require('mongoose');
 
 const answerSchema = new mongoose.Schema({
@@ -19,7 +20,7 @@ const responseSchema = new mongoose.Schema({
     ref: 'User',
     default: null
   },
-  respondentName: { type: String, default: 'Anonymous' },
+  respondentName: { type: String, default: null },
   respondentEmail: { type: String, default: null },
   isAnonymous: { type: Boolean, default: false },
   answers: [answerSchema],

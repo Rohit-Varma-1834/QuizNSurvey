@@ -1,3 +1,4 @@
+// Checks user tokens and protects private backend routes.
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 

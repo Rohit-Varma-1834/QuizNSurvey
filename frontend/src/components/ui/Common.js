@@ -1,3 +1,4 @@
+// Contains shared small UI pieces used across many pages.
 import React from 'react';
 
 export function EmptyState({ icon, title, description, action }) {

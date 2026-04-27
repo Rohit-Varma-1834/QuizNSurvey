@@ -1,3 +1,4 @@
+// Handles public routes for opening published forms.
 const express = require('express');
 const { getPublicForm } = require('../controllers/publicController');
 const router = express.Router();

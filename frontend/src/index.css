@@ -1,3 +1,4 @@
+/* Defines the global styles and theme variables for the app. */
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
 
 :root {
@@ -258,6 +259,7 @@ input, textarea, select { font-family: inherit; }
   letter-spacing: 0.02em;
 }
 .badge-primary { background: var(--primary-light); color: var(--primary-dark); }
+.badge-secondary { background: var(--bg-secondary); color: var(--text-secondary); }
 .badge-success { background: var(--success-soft); color: var(--success); }
 .badge-warning { background: var(--warning-soft); color: var(--primary-dark); }
 .badge-danger { background: var(--danger-soft); color: var(--danger); }

@@ -1,3 +1,4 @@
+// Lets users create and edit quiz and survey forms.
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -20,6 +21,41 @@ const newQuestion = (type = 'multiple_choice') => ({
   options: type === 'true_false' ? ['True','False'] : ['multiple_choice','checkbox','dropdown'].includes(type) ? ['Option 1','Option 2'] : [],
   correctAnswer: null, points: 1, ratingMax: 5, order: 0,
 });
+
+const defaultAiDraft = (type) => ({
+  topic: '',
+  audience: '',
+  goal: '',
+  questionCount: type === 'quiz' ? 5 : 4,
+  difficulty: 'medium',
+});
+
+const normalizeGeneratedQuestion = (question, formType, order) => {
+  const questionType = formType === 'quiz' ? 'multiple_choice' : (question.type || 'short_answer');
+  const base = newQuestion(questionType);
+  const options = Array.isArray(question.options)
+    ? question.options.map((option) => String(option).trim()).filter(Boolean)
+    : [];
+
+  return {
+    ...base,
+    ...question,
+    id: uuidv4(),
+    order,
+    type: questionType,
+    question: String(question.question || '').trim(),
+    description: String(question.description || '').trim(),
+    required: question.required !== false,
+    options: questionType === 'true_false'
+      ? ['True', 'False']
+      : ['multiple_choice', 'checkbox', 'dropdown'].includes(questionType)
+        ? (options.length ? options : base.options)
+        : [],
+    correctAnswer: formType === 'quiz' ? question.correctAnswer ?? null : null,
+    points: formType === 'quiz' ? Math.max(1, Number(question.points) || 1) : 1,
+    ratingMax: questionType === 'rating' ? Math.max(3, Number(question.ratingMax) || 5) : 5,
+  };
+};
 
 // ── TYPE SELECTOR ─────────────────────────────────────────────────────────────
 function TypeSelector({ onSelect }) {
@@ -89,7 +125,13 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [activeTab, setActiveTab] = useState('questions');
+  const [aiDraft, setAiDraft] = useState(() => defaultAiDraft(type));
+  const [aiLoading, setAiLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    setAiDraft(defaultAiDraft(type));
+  }, [type]);
 
   const validate = () => {
     const e = {};
@@ -137,6 +179,49 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
   const deleteQ = (i) => setForm(f => ({ ...f, questions: f.questions.filter((_, idx) => idx !== i) }));
   const dupQ = (i) => setForm(f => { const qs = [...f.questions]; qs.splice(i+1, 0, {...qs[i], id: uuidv4()}); return {...f, questions: qs}; });
   const moveQ = (i, dir) => setForm(f => { const qs = [...f.questions]; const to = i+dir; if(to<0||to>=qs.length) return f; [qs[i],qs[to]]=[qs[to],qs[i]]; return {...f, questions: qs}; });
+
+  const handleGenerateQuestions = async () => {
+    if (!aiDraft.topic.trim()) {
+      toast.error('Topic is required');
+      return;
+    }
+
+    setAiLoading(true);
+    try {
+      const payload = {
+        ...aiDraft,
+        formType: type,
+        questionCount: Number(aiDraft.questionCount),
+      };
+
+      const { data } = await api.post('/api/ai/generate-questions', payload);
+      const generatedQuestions = Array.isArray(data.questions) ? data.questions : [];
+
+      if (!generatedQuestions.length) {
+        toast.error('AI did not return any questions');
+        return;
+      }
+
+      setForm((currentForm) => {
+        const startOrder = currentForm.questions.length;
+        const normalizedQuestions = generatedQuestions.map((question, index) => (
+          normalizeGeneratedQuestion(question, type, startOrder + index)
+        ));
+
+        return {
+          ...currentForm,
+          questions: [...currentForm.questions, ...normalizedQuestions],
+        };
+      });
+
+      setErrors((current) => ({ ...current, questions: '' }));
+      toast.success(`${generatedQuestions.length} question${generatedQuestions.length === 1 ? '' : 's'} added. Review them before saving.`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to generate questions');
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const totalPoints = form.questions.reduce((s, q) => s + (q.points || 1), 0);
 
@@ -212,6 +297,80 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              <div className="card" style={{ padding:'20px 22px', borderLeft:`4px solid var(--secondary)` }}>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:16, marginBottom:16 }}>
+                  <div>
+                    <h3 style={{ fontSize:16, fontWeight:700, marginBottom:6 }}>AI Question Generator</h3>
+                    <p style={{ fontSize:13, color:'var(--text-secondary)', margin:0 }}>
+                      Describe the topic and goal, then review the generated questions in the editor before saving.
+                    </p>
+                  </div>
+                  <button onClick={handleGenerateQuestions} disabled={aiLoading} className="btn btn-secondary btn-sm">
+                    {aiLoading ? 'Generating…' : 'Generate with AI'}
+                  </button>
+                </div>
+
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
+                  <div className="form-group">
+                    <label className="form-label">Topic</label>
+                    <input
+                      value={aiDraft.topic}
+                      onChange={e => setAiDraft(current => ({ ...current, topic: e.target.value }))}
+                      className="form-input"
+                      placeholder={isQuiz ? 'e.g. Algebra basics' : 'e.g. Customer onboarding feedback'}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Audience</label>
+                    <input
+                      value={aiDraft.audience}
+                      onChange={e => setAiDraft(current => ({ ...current, audience: e.target.value }))}
+                      className="form-input"
+                      placeholder={isQuiz ? 'e.g. 8th grade students' : 'e.g. New SaaS customers'}
+                    />
+                  </div>
+                  <div className="form-group" style={{ gridColumn:'1/-1' }}>
+                    <label className="form-label">Goal</label>
+                    <textarea
+                      value={aiDraft.goal}
+                      onChange={e => setAiDraft(current => ({ ...current, goal: e.target.value }))}
+                      className="form-input form-textarea"
+                      rows={2}
+                      placeholder={isQuiz ? 'What should the quiz test?' : 'What do you want to learn from respondents?'}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Number of Questions</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={15}
+                      value={aiDraft.questionCount}
+                      onChange={e => setAiDraft(current => ({ ...current, questionCount: e.target.value }))}
+                      className="form-input"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Difficulty</label>
+                    <select
+                      value={aiDraft.difficulty}
+                      onChange={e => setAiDraft(current => ({ ...current, difficulty: e.target.value }))}
+                      className="form-input form-select"
+                    >
+                      {['easy', 'medium', 'hard'].map(level => (
+                        <option key={level} value={level}>
+                          {level.charAt(0).toUpperCase() + level.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <p style={{ fontSize:12, color:'var(--text-muted)', margin:'12px 0 0' }}>
+                  AI questions are added to this draft only. You can edit or delete them before saving or publishing.
+                </p>
               </div>
 
               {errors.questions && <div style={{ background:'var(--danger-soft)', border:'1px solid color-mix(in srgb, var(--danger) 28%, var(--bg-secondary) 72%)', borderRadius:8, padding:'10px 16px', fontSize:13, color:'var(--danger)' }}>⚠️ {errors.questions}</div>}

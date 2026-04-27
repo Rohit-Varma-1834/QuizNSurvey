@@ -1,3 +1,4 @@
+// Sets up the main app providers and page routes.
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';

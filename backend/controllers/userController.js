@@ -1,3 +1,4 @@
+// Handles user profile updates and account settings.
 const User = require('../models/User');
 const Form = require('../models/Form');
 const Response = require('../models/Response');

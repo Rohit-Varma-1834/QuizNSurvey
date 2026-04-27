@@ -1,3 +1,4 @@
+// Handles creating, updating, publishing, and managing forms.
 const QRCode = require('qrcode');
 const { validationResult } = require('express-validator');
 const Form = require('../models/Form');
@@ -152,16 +153,20 @@ exports.publishForm = async (req, res) => {
 exports.getDashboardStats = async (req, res) => {
   try {
     const userId = req.user._id;
-    const [totalForms, publishedForms, totalResponses, recentForms] = await Promise.all([
+    const userFormIdsPromise = Form.find({ creator: userId }).distinct('_id');
+    const [userFormIds, totalForms, publishedForms, draftForms, recentForms, topForms] = await Promise.all([
+      userFormIdsPromise,
       Form.countDocuments({ creator: userId }),
       Form.countDocuments({ creator: userId, status: 'published' }),
-      Response.countDocuments({ form: { $in: await Form.find({ creator: userId }).distinct('_id') } }),
-      Form.find({ creator: userId }).sort('-createdAt').limit(5).select('title type status totalResponses createdAt')
+      Form.countDocuments({ creator: userId, status: 'draft' }),
+      Form.find({ creator: userId }).sort('-createdAt').limit(5).select('title type status totalResponses createdAt coverColor'),
+      Form.find({ creator: userId }).sort('-totalResponses -createdAt').limit(5).select('title type status totalResponses createdAt coverColor')
     ]);
+
+    const totalResponses = await Response.countDocuments({ form: { $in: userFormIds } });
 
     // Weekly responses for chart
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    const userFormIds = await Form.find({ creator: userId }).distinct('_id');
 
     const weeklyData = await Response.aggregate([
       { $match: { form: { $in: userFormIds }, submittedAt: { $gte: sevenDaysAgo } } },
@@ -171,7 +176,7 @@ exports.getDashboardStats = async (req, res) => {
 
     res.json({
       success: true,
-      stats: { totalForms, publishedForms, totalResponses, recentForms },
+      stats: { totalForms, publishedForms, draftForms, totalResponses, recentForms, topForms },
       weeklyData
     });
   } catch (error) {

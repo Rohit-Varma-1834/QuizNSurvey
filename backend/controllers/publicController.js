@@ -1,3 +1,4 @@
+// Returns published forms so public users can answer them.
 const Form = require('../models/Form');
 
 // Get public form by publicId (for respondents)

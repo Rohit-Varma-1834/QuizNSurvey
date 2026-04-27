@@ -1,3 +1,4 @@
+// Shows a dashboard card with form details and quick actions.
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {

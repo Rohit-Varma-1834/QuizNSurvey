@@ -1,3 +1,4 @@
+// Reusable modal window for dialogs and popups.
 import React, { useEffect } from 'react';
 import { HiX } from 'react-icons/hi';
 

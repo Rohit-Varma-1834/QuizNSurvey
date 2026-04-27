@@ -1,3 +1,4 @@
+// Adds demo users, forms, and responses to the database.
 require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');

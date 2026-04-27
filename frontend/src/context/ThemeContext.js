@@ -1,3 +1,4 @@
+// Manages light and dark theme settings for the app.
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext(null);

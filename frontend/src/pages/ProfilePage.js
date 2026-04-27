@@ -1,3 +1,4 @@
+// Lets users update their profile, password, and account details.
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';

@@ -1,3 +1,4 @@
+// Handles routes for user profile and account settings.
 const express = require('express');
 const { updateProfile, updatePassword, updateEmail, updateAvatar, deleteAccount } = require('../controllers/userController');
 const { protect } = require('../middleware/auth');

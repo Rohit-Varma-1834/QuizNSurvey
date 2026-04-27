@@ -1,3 +1,4 @@
+// Starts the backend server and connects all API routes and middleware.
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -54,6 +55,7 @@ app.use('/api/users',     require('./routes/users'));
 app.use('/api/forms',     require('./routes/forms'));
 app.use('/api/responses', require('./routes/responses'));
 app.use('/api/analytics', require('./routes/analytics'));
+app.use('/api/ai',        require('./routes/ai'));
 app.use('/api/public',    require('./routes/public'));
 
 // ── 8. Health check ──────────────────────────────────────────────────────────

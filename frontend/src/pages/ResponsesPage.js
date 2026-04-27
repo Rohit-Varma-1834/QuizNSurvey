@@ -1,10 +1,25 @@
+// Shows detailed submitted responses for a selected form.
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import Navbar from '../components/layout/Navbar';
 import { PageLoader, EmptyState, ConfirmDialog } from '../components/ui/Common';
-import { HiOutlineArrowLeft, HiOutlineTrash, HiOutlineChartBar } from 'react-icons/hi';
+import { HiOutlineArrowLeft, HiOutlineTrash, HiOutlineChartBar, HiOutlineDownload } from 'react-icons/hi';
 import toast from 'react-hot-toast';
+
+const formatLocalDateInput = (value) => {
+  const date = new Date(value);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const answerToText = (answer) => {
+  if (Array.isArray(answer)) return answer.join(' ');
+  if (answer === null || answer === undefined) return '';
+  return answer.toString();
+};
 
 export default function ResponsesPage() {
   const { id } = useParams();
@@ -16,6 +31,45 @@ export default function ResponsesPage() {
   const [pagination, setPagination] = useState({});
   const [expanded, setExpanded] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
+  const [exporting, setExporting] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [quizStatus, setQuizStatus] = useState('');
+  const [aiSummary, setAiSummary] = useState(null);
+  const [summaryLoading, setSummaryLoading] = useState(false);
+
+  const getDisplayName = (response) =>
+    response.isAnonymous ? 'Anonymous Respondent' : (response.respondentName || 'Anonymous Respondent');
+
+  const hasActiveFilters = Boolean(searchText.trim() || dateFrom || dateTo || quizStatus);
+
+  const filteredResponses = responses.filter((response) => {
+    const displayName = getDisplayName(response);
+    const email = response.isAnonymous ? '' : (response.respondentEmail || '');
+    const answerText = response.answers.map(answer => `${answer.questionText} ${answerToText(answer.answer)}`).join(' ').toLowerCase();
+    const searchTerm = searchText.trim().toLowerCase();
+    const submittedDate = formatLocalDateInput(response.submittedAt);
+
+    if (searchTerm) {
+      const matchesSearch =
+        displayName.toLowerCase().includes(searchTerm) ||
+        email.toLowerCase().includes(searchTerm) ||
+        answerText.includes(searchTerm);
+
+      if (!matchesSearch) return false;
+    }
+
+    if (dateFrom && submittedDate < dateFrom) return false;
+    if (dateTo && submittedDate > dateTo) return false;
+
+    if (form?.type === 'quiz' && quizStatus) {
+      if (quizStatus === 'passed' && response.passed !== true) return false;
+      if (quizStatus === 'failed' && response.passed !== false) return false;
+    }
+
+    return true;
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,6 +97,50 @@ export default function ResponsesPage() {
     finally { setDeleteId(null); }
   };
 
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const response = await api.get(`/api/responses/form/${id}/export`, {
+        responseType: 'blob'
+      });
+
+      const contentDisposition = response.headers['content-disposition'] || '';
+      const fileNameMatch = contentDisposition.match(/filename="([^"]+)"/i);
+      const fileName = fileNameMatch?.[1] || `${form?.title || 'responses'}-responses.csv`;
+      const blobUrl = window.URL.createObjectURL(new Blob([response.data], { type: 'text/csv' }));
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+      toast.success('CSV export started');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to export responses');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleGenerateSummary = async () => {
+    if (!responses.length && !pagination.total) {
+      toast.error('This form has no responses to summarize yet');
+      return;
+    }
+
+    setSummaryLoading(true);
+    try {
+      const { data } = await api.post(`/api/ai/summarize-responses/${id}`);
+      setAiSummary(data.summary);
+      toast.success('AI summary generated');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to generate AI summary');
+    } finally {
+      setSummaryLoading(false);
+    }
+  };
+
   if (loading) return <><Navbar /><PageLoader /></>;
 
   return (
@@ -59,6 +157,12 @@ export default function ResponsesPage() {
               {pagination.total || 0} total responses
             </p>
           </div>
+          <button onClick={handleExport} className="btn btn-secondary btn-sm" disabled={exporting}>
+            <HiOutlineDownload size={15} /> {exporting ? 'Exporting...' : 'Export CSV'}
+          </button>
+          <button onClick={handleGenerateSummary} className="btn btn-secondary btn-sm" disabled={summaryLoading || (pagination.total || 0) === 0}>
+            {summaryLoading ? 'Generating…' : 'Generate AI Summary'}
+          </button>
           <Link to={`/forms/${id}/analytics`} className="btn btn-primary btn-sm">
             <HiOutlineChartBar size={15} /> Analytics
           </Link>
@@ -68,19 +172,85 @@ export default function ResponsesPage() {
           <EmptyState icon="📭" title="No responses yet" description="Share your form to start collecting responses." />
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {responses.map((r, i) => (
+            {aiSummary && (
+              <div className="card" style={{ padding: '20px 22px', borderLeft: '4px solid var(--primary)' }}>
+                <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 10 }}>AI Response Summary</h3>
+                <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 16 }}>
+                  {aiSummary.overallSummary}
+                </p>
+                <SummaryList title="Key Trends" items={aiSummary.keyTrends} />
+                <SummaryList title="Common Positive Feedback" items={aiSummary.positiveFeedback} />
+                <SummaryList title="Common Issues" items={aiSummary.negativeFeedback} />
+                <SummaryList title="Suggested Actions" items={aiSummary.suggestedActions} />
+              </div>
+            )}
+
+            <div
+              className="card"
+              style={{
+                padding: '16px 18px',
+                display: 'grid',
+                gridTemplateColumns: form?.type === 'quiz' ? 'minmax(220px, 1.5fr) repeat(3, minmax(140px, 1fr))' : 'minmax(220px, 1.5fr) repeat(2, minmax(140px, 1fr))',
+                gap: 12
+              }}
+            >
+              <input
+                className="form-input"
+                placeholder="Search name, email, or answers..."
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
+              />
+              <input
+                className="form-input"
+                type="date"
+                value={dateFrom}
+                onChange={e => setDateFrom(e.target.value)}
+              />
+              <input
+                className="form-input"
+                type="date"
+                value={dateTo}
+                onChange={e => setDateTo(e.target.value)}
+              />
+              {form?.type === 'quiz' && (
+                <select
+                  className="form-input form-select"
+                  value={quizStatus}
+                  onChange={e => setQuizStatus(e.target.value)}
+                >
+                  <option value="">All Results</option>
+                  <option value="passed">Passed</option>
+                  <option value="failed">Failed</option>
+                </select>
+              )}
+            </div>
+
+            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+              Showing {filteredResponses.length} of {responses.length} loaded responses
+            </p>
+
+            {filteredResponses.length === 0 ? (
+              <EmptyState
+                icon="🔎"
+                title="No responses match these filters"
+                description={hasActiveFilters ? 'Try changing your search text or date/status filters.' : 'No responses found.'}
+              />
+            ) : filteredResponses.map((r) => {
+              const displayName = getDisplayName(r);
+
+              return (
               <div key={r._id} className="card" style={{ overflow: 'hidden' }}>
                 <div
                   style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
                   onClick={() => setExpanded(expanded === r._id ? null : r._id)}
                 >
                   <div style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
-                    {r.respondentName?.[0]?.toUpperCase() || '?'}
+                    {displayName[0]}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontWeight: 600, fontSize: 14 }}>{r.respondentName}</p>
+                    <p style={{ fontWeight: 600, fontSize: 14 }}>{displayName}</p>
                     <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                      {r.respondentEmail || 'No email'} · {new Date(r.submittedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      {r.isAnonymous ? 'Anonymous response' : (r.respondentEmail || 'No email')} · {new Date(r.submittedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
                   {form?.type === 'quiz' && r.percentage !== null && (
@@ -144,7 +314,8 @@ export default function ResponsesPage() {
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
 
             {/* Pagination */}
             {pagination.pages > 1 && (
@@ -170,6 +341,25 @@ export default function ResponsesPage() {
         confirmLabel="Delete"
         danger
       />
+    </div>
+  );
+}
+
+function SummaryList({ title, items }) {
+  if (!items?.length) return null;
+
+  return (
+    <div style={{ marginTop: 14 }}>
+      <h4 style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-secondary)' }}>
+        {title}
+      </h4>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {items.map((item) => (
+          <div key={item} style={{ padding: '10px 12px', borderRadius: 8, background: 'var(--bg-secondary)', fontSize: 13 }}>
+            {item}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

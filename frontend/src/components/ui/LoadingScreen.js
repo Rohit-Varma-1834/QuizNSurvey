@@ -1,3 +1,4 @@
+// Shows a full-page loading screen while the app is loading.
 import React from 'react';
 
 export default function LoadingScreen() {

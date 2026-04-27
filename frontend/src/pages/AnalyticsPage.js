@@ -1,3 +1,4 @@
+// Shows charts and analytics for a selected form.
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Bar, Pie, Line, Doughnut } from 'react-chartjs-2';
@@ -9,6 +10,7 @@ import api from '../services/api';
 import Navbar from '../components/layout/Navbar';
 import { PageLoader, StatCard } from '../components/ui/Common';
 import { HiOutlineArrowLeft, HiOutlineEye, HiOutlineRefresh } from 'react-icons/hi';
+import toast from 'react-hot-toast';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler);
 
@@ -20,6 +22,11 @@ export default function AnalyticsPage() {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [aiSummary, setAiSummary] = useState(null);
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [sentiment, setSentiment] = useState(null);
+  const [sentimentLoading, setSentimentLoading] = useState(false);
+  const [pdfExporting, setPdfExporting] = useState(false);
 
   const fetchAnalytics = async () => {
     setLoading(true);
@@ -32,11 +39,78 @@ export default function AnalyticsPage() {
 
   useEffect(() => { fetchAnalytics(); }, [id]);
 
+  const handleGenerateSummary = async () => {
+    if (!analytics?.totalResponses) {
+      toast.error('This form has no responses to summarize yet');
+      return;
+    }
+
+    setSummaryLoading(true);
+    try {
+      const { data } = await api.post(`/api/ai/summarize-responses/${id}`);
+      setAiSummary(data.summary);
+      toast.success('AI summary generated');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to generate AI summary');
+    } finally {
+      setSummaryLoading(false);
+    }
+  };
+
   if (loading) return <><Navbar /><PageLoader /></>;
   if (error) return <><Navbar /><div style={{ padding: 40, textAlign: 'center' }}><p style={{ color: 'var(--danger)' }}>{error}</p><Link to="/dashboard" className="btn btn-primary" style={{ marginTop: 16 }}>Back</Link></div></>;
 
   const a = analytics;
   const form = a.form;
+  const passCount = a.passFailCounts?.passed ?? 0;
+  const failCount = a.passFailCounts?.failed ?? 0;
+  const hasTextResponses = form.type === 'survey' && (a.questionBreakdown || []).some((qb) => (
+    ['short_answer', 'paragraph'].includes(qb.type) && qb.responseCount > 0
+  ));
+
+  const handleAnalyzeSentiment = async () => {
+    if (!hasTextResponses) {
+      toast.error('This survey has no text responses to analyze yet');
+      return;
+    }
+
+    setSentimentLoading(true);
+    try {
+      const { data } = await api.post(`/api/ai/sentiment/${id}`);
+      setSentiment(data.sentiment);
+      toast.success('Sentiment analysis generated');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to analyze sentiment');
+    } finally {
+      setSentimentLoading(false);
+    }
+  };
+
+  const handleExportPdf = async () => {
+    setPdfExporting(true);
+    try {
+      const response = await api.get(`/api/analytics/form/${id}/report.pdf`, {
+        responseType: 'blob'
+      });
+
+      const contentDisposition = response.headers['content-disposition'] || '';
+      const fileNameMatch = contentDisposition.match(/filename="([^"]+)"/i);
+      const fileName = fileNameMatch?.[1] || `${form.title || 'analytics'}-report.pdf`;
+      const blobUrl = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+      toast.success('PDF report downloaded');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to export PDF report');
+    } finally {
+      setPdfExporting(false);
+    }
+  };
 
   // Daily responses chart
   const lineData = {
@@ -66,7 +140,7 @@ export default function AnalyticsPage() {
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 24px' }}>
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28, flexWrap: 'wrap' }}>
           <button onClick={() => navigate('/dashboard')} className="btn btn-ghost btn-sm" style={{ padding: '7px 10px' }}>
             <HiOutlineArrowLeft size={16} />
           </button>
@@ -77,6 +151,17 @@ export default function AnalyticsPage() {
             </p>
           </div>
           <button onClick={fetchAnalytics} className="btn btn-secondary btn-sm"><HiOutlineRefresh size={15} /> Refresh</button>
+          <button onClick={handleExportPdf} className="btn btn-secondary btn-sm" disabled={pdfExporting}>
+            {pdfExporting ? 'Exporting…' : 'Export PDF Report'}
+          </button>
+          <button onClick={handleGenerateSummary} className="btn btn-secondary btn-sm" disabled={summaryLoading || a.totalResponses === 0}>
+            {summaryLoading ? 'Generating…' : 'Generate AI Summary'}
+          </button>
+          {form.type === 'survey' && (
+            <button onClick={handleAnalyzeSentiment} className="btn btn-secondary btn-sm" disabled={sentimentLoading || !hasTextResponses}>
+              {sentimentLoading ? 'Analyzing…' : 'Analyze Sentiment'}
+            </button>
+          )}
           <Link to={`/forms/${id}/responses`} className="btn btn-primary btn-sm"><HiOutlineEye size={15} /> View Responses</Link>
         </div>
 
@@ -90,34 +175,86 @@ export default function AnalyticsPage() {
           </div>
         ) : (
           <>
+            {aiSummary && (
+              <AiSummaryCard summary={aiSummary} />
+            )}
+
+            {form.type === 'survey' && (
+              sentiment ? (
+                <SentimentCard sentiment={sentiment} />
+              ) : !hasTextResponses ? (
+                <div className="card" style={{ padding: '18px 20px', marginBottom: 24, borderLeft: '4px solid var(--border)' }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Survey Sentiment</h3>
+                  <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
+                    No text-based responses are available yet. Sentiment analysis needs short-answer or paragraph responses.
+                  </p>
+                </div>
+              ) : null
+            )}
+
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16, marginBottom: 28 }}>
               <StatCard label="Total Responses" value={a.totalResponses} icon="📋" color="var(--secondary)" />
+              <StatCard label="Questions" value={a.questionBreakdown?.length || 0} icon="❓" color="var(--primary-dark)" />
               {form.type === 'quiz' && a.avgPercentage !== null && (
                 <StatCard label="Avg Score" value={`${a.avgPercentage}%`} icon="🎯" color="var(--primary)" />
               )}
+              {form.type === 'quiz' && a.avgScore !== null && (
+                <StatCard label="Avg Points" value={a.avgScore} icon="⭐" color="var(--accent)" />
+              )}
               {a.passRate !== null && (
                 <StatCard label="Pass Rate" value={`${a.passRate}%`} icon="✅" color="var(--accent)" />
+              )}
+              {form.type === 'quiz' && a.passFailCounts && (
+                <StatCard label="Pass / Fail" value={`${passCount}/${failCount}`} icon="🏁" color="var(--secondary)" />
               )}
               {a.avgTime && (
                 <StatCard label="Avg Time" value={`${Math.floor(a.avgTime / 60)}m ${a.avgTime % 60}s`} icon="⏱" color="var(--primary-dark)" />
               )}
             </div>
 
-            {/* Response Trend */}
-            {a.dailyResponses?.length > 0 && (
-              <div className="card" style={{ padding: '20px 22px', marginBottom: 24 }}>
-                <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 18 }}>📈 Response Trend (Last 30 Days)</h3>
-                <div style={{ height: 220 }}>
-                  <Line data={lineData} options={{ ...chartOpts, maintainAspectRatio: false }} />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, marginBottom: 24 }}>
+              {/* Response Trend */}
+              {a.dailyResponses?.length > 0 && (
+                <div className="card" style={{ padding: '20px 22px' }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>📈 Response Trend</h3>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 18 }}>
+                    Response count over the last 30 days
+                  </p>
+                  <div style={{ height: 220 }}>
+                    <Line data={lineData} options={{ ...chartOpts, maintainAspectRatio: false }} />
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+
+              {a.topSelections?.length > 0 && (
+                <div className="card" style={{ padding: '20px 22px' }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>🔥 Most Selected Answers</h3>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 18 }}>
+                    The answers respondents picked most often
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {a.topSelections.map((item) => (
+                      <div key={`${item.questionId}-${item.answer}`} style={{ padding: '12px 14px', borderRadius: 12, background: 'var(--bg-secondary)' }}>
+                        <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>{item.question}</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>{item.answer}</p>
+                        <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0 }}>
+                          Selected {item.count} time{item.count === 1 ? '' : 's'} ({item.percentage}%)
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Score distribution for quizzes */}
             {form.type === 'quiz' && a.scoreDistribution && (
               <div className="card" style={{ padding: '20px 22px', marginBottom: 24 }}>
-                <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 18 }}>🏆 Score Distribution</h3>
+                <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>🏆 Score Distribution</h3>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 18 }}>
+                  How respondents are spread across score ranges
+                </p>
                 <div style={{ height: 220 }}>
                   <Bar
                     data={{
@@ -138,7 +275,12 @@ export default function AnalyticsPage() {
             )}
 
             {/* Question breakdown */}
-            <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>Question Breakdown</h2>
+            <div style={{ marginBottom: 16 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6 }}>Question-Level Insights</h2>
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
+                See response volume, strongest answer patterns, and quick takeaways for each question.
+              </p>
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               {(a.questionBreakdown || []).map((qb, i) => (
                 <QuestionAnalyticsCard key={qb.questionId} qb={qb} index={i} formType={form.type} />
@@ -191,8 +333,77 @@ export default function AnalyticsPage() {
   );
 }
 
+function AiSummaryCard({ summary }) {
+  return (
+    <div className="card" style={{ padding: '20px 22px', marginBottom: 24, borderLeft: '4px solid var(--primary)' }}>
+      <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 10 }}>AI Response Summary</h3>
+      <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 16 }}>
+        {summary.overallSummary}
+      </p>
+      <SummaryList title="Key Trends" items={summary.keyTrends} />
+      <SummaryList title="Common Positive Feedback" items={summary.positiveFeedback} />
+      <SummaryList title="Common Issues" items={summary.negativeFeedback} />
+      <SummaryList title="Suggested Actions" items={summary.suggestedActions} />
+    </div>
+  );
+}
+
+function SummaryList({ title, items }) {
+  if (!items?.length) return null;
+
+  return (
+    <div style={{ marginTop: 14 }}>
+      <h4 style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-secondary)' }}>
+        {title}
+      </h4>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {items.map((item) => (
+          <div key={item} style={{ padding: '10px 12px', borderRadius: 8, background: 'var(--bg-secondary)', fontSize: 13 }}>
+            {item}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SentimentCard({ sentiment }) {
+  const segments = [
+    { key: 'positive', label: 'Positive', percentage: sentiment.positivePercentage, count: sentiment.positiveCount, color: 'var(--secondary)' },
+    { key: 'neutral', label: 'Neutral', percentage: sentiment.neutralPercentage, count: sentiment.neutralCount, color: 'var(--text-secondary)' },
+    { key: 'negative', label: 'Negative', percentage: sentiment.negativePercentage, count: sentiment.negativeCount, color: 'var(--danger)' },
+  ];
+
+  return (
+    <div className="card" style={{ padding: '20px 22px', marginBottom: 24, borderLeft: '4px solid var(--secondary)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 16 }}>
+        <div>
+          <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Survey Sentiment</h3>
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
+            Based on {sentiment.analyzedResponseCount} text response{sentiment.analyzedResponseCount === 1 ? '' : 's'}.
+          </p>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 14, marginBottom: 16 }}>
+        {segments.map((segment) => (
+          <div key={segment.key} style={{ padding: '16px 18px', borderRadius: 12, background: 'var(--bg-secondary)' }}>
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 8 }}>{segment.label}</p>
+            <p style={{ fontSize: 28, fontWeight: 800, color: segment.color, marginBottom: 4 }}>{segment.percentage}%</p>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>{segment.count} response{segment.count === 1 ? '' : 's'}</p>
+          </div>
+        ))}
+      </div>
+
+      <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
+        {sentiment.explanation}
+      </p>
+    </div>
+  );
+}
+
 function QuestionAnalyticsCard({ qb, index, formType }) {
-  const { question, type, responseCount, breakdown, correctCount } = qb;
+  const { question, type, responseCount, responseRate, breakdown, correctCount, insight, topAnswer } = qb;
 
   const renderChart = () => {
     if (breakdown.type === 'text') {
@@ -235,7 +446,7 @@ function QuestionAnalyticsCard({ qb, index, formType }) {
     const total = values.reduce((s, v) => s + v, 0);
 
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, alignItems: 'center' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20, alignItems: 'center' }}>
         <div style={{ height: 180 }}>
           <Doughnut
             data={{
@@ -270,6 +481,7 @@ function QuestionAnalyticsCard({ qb, index, formType }) {
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <span className="badge badge-primary">{responseCount} responses</span>
+          <span className="badge badge-secondary">{responseRate}% response rate</span>
           {formType === 'quiz' && correctCount !== undefined && (
             <span className="badge badge-success">
               {responseCount > 0 ? Math.round((correctCount / responseCount) * 100) : 0}% correct
@@ -277,6 +489,20 @@ function QuestionAnalyticsCard({ qb, index, formType }) {
           )}
         </div>
       </div>
+      {(insight || topAnswer) && (
+        <div style={{ padding: '12px 14px', borderRadius: 12, background: 'var(--bg-secondary)', marginBottom: 16 }}>
+          {insight && (
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: topAnswer ? 6 : 0 }}>
+              {insight}
+            </p>
+          )}
+          {topAnswer && (
+            <p style={{ fontSize: 13, fontWeight: 600, margin: 0 }}>
+              Top answer: {topAnswer.answer} ({topAnswer.percentage}%)
+            </p>
+          )}
+        </div>
+      )}
       {renderChart()}
     </div>
   );

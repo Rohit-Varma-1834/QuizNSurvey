@@ -1,20 +1,15 @@
+// Manages login state and user authentication across the app.
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext(null);
-const isPublicFormPath = (pathname = '') => /^\/f\/[^/]+\/?$/.test(pathname);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const loadUser = useCallback(async () => {
-    if (typeof window !== 'undefined' && isPublicFormPath(window.location.pathname)) {
-      setLoading(false);
-      return;
-    }
-
     const token = localStorage.getItem('token');
     if (!token) { setLoading(false); return; }
     try {

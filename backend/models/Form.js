@@ -1,3 +1,4 @@
+// Defines the database schema for quizzes and surveys.
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 

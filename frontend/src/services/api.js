@@ -1,11 +1,13 @@
+// Sets up API requests and handles shared request errors.
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+const apiBaseUrl = (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || '/api',
+  baseURL: apiBaseUrl,
   timeout: 15000,
 });
-
 const isPublicFormPath = (pathname = '') => /^\/f\/[^/]+\/?$/.test(pathname);
 const isPublicFormRequest = (url = '') =>
   url.includes('/api/public/') || url.includes('/api/responses/submit/');
@@ -26,17 +28,15 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    if (error.response?.status === 401) {
       const currentPath = window.location.pathname;
       const requestUrl = error.config?.url || '';
       const isPublicFormPage = isPublicFormPath(currentPath);
       const isAuthBootstrapRequest = requestUrl.includes('/api/auth/me');
       const isPublicRequest = isPublicFormRequest(requestUrl);
 
-      if (error.response?.status === 401) {
-        localStorage.removeItem('token');
-        delete api.defaults.headers.common['Authorization'];
-      }
+      localStorage.removeItem('token');
+      delete api.defaults.headers.common['Authorization'];
 
       if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
         if (!isPublicFormPage && !isAuthBootstrapRequest && !isPublicRequest) {

@@ -1,3 +1,4 @@
+// UI component for creating and editing form questions.
 import React, { useState } from 'react';
 import {
   HiOutlineTrash, HiOutlinePlus, HiOutlineMenu,

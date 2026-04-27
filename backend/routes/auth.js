@@ -1,3 +1,4 @@
+// Handles authentication routes like register, login, and logout.
 const express = require('express');
 const { body } = require('express-validator');
 const { register, login, getMe, logout } = require('../controllers/authController');

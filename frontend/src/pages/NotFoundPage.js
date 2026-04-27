@@ -1,3 +1,4 @@
+// Shows a simple page when a route is not found.
 import React from 'react';
 import { Link } from 'react-router-dom';
 

@@ -1,7 +1,23 @@
+// Public page where people fill out and submit a form.
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
 import { Spinner } from '../components/ui/Common';
+
+const shuffleArray = (items = []) => {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
+const formatAnswer = (answer) => {
+  if (Array.isArray(answer)) return answer.length ? answer.join(', ') : 'No answer';
+  if (answer === null || answer === undefined || answer === '') return 'No answer';
+  return answer.toString();
+};
 
 export default function FormResponsePage() {
   const { publicId } = useParams();
@@ -19,20 +35,26 @@ export default function FormResponsePage() {
   const timerRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(0);
   const QUESTIONS_PER_PAGE = 5;
+  const isAnonymousMode = Boolean(form?.settings?.allowAnonymous);
 
   useEffect(() => {
     api.get(`/api/public/form/${publicId}`)
       .then(({ data }) => {
-        setForm(data.form);
+        const questions = data.form.settings?.shuffleQuestions
+          ? shuffleArray(data.form.questions || [])
+          : (data.form.questions || []);
+        const formData = { ...data.form, questions };
+
+        setForm(formData);
         // Init answers
         const init = {};
-        data.form.questions.forEach(q => {
+        questions.forEach(q => {
           init[q.id] = q.type === 'checkbox' ? [] : '';
         });
         setAnswers(init);
         // Timer
-        if (data.form.settings?.timeLimit) {
-          setTimeLeft(data.form.settings.timeLimit * 60);
+        if (formData.settings?.timeLimit) {
+          setTimeLeft(formData.settings.timeLimit * 60);
         }
       })
       .catch(() => setError('Form not found or no longer available.'))
@@ -63,9 +85,11 @@ export default function FormResponsePage() {
     const name = meta.name.trim();
     const email = meta.email.trim();
 
-    if (!name) errs.name = 'Name is required';
-    if (!email) errs.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = 'Enter a valid email address';
+    if (!isAnonymousMode) {
+      if (!name) errs.name = 'Name is required';
+      if (!email) errs.email = 'Email is required';
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = 'Enter a valid email address';
+    }
 
     (form?.questions || []).forEach(q => {
       if (!q.required) return;
@@ -85,9 +109,9 @@ export default function FormResponsePage() {
     try {
       const payload = {
         answers: Object.entries(answers).map(([questionId, answer]) => ({ questionId, answer })),
-        respondentName: meta.name.trim(),
-        respondentEmail: meta.email.trim(),
-        isAnonymous: false,
+        respondentName: isAnonymousMode ? null : meta.name.trim(),
+        respondentEmail: isAnonymousMode ? null : meta.email.trim(),
+        isAnonymous: isAnonymousMode,
         timeTaken: Math.round((Date.now() - startTime) / 1000),
       };
       const { data } = await api.post(`/api/responses/submit/${publicId}`, payload);
@@ -149,6 +173,42 @@ export default function FormResponsePage() {
           </div>
         )}
 
+        {form.type === 'quiz' && Array.isArray(result.correctAnswers) && result.correctAnswers.length > 0 && (
+          <div style={{ textAlign: 'left', marginBottom: 24 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 14, textAlign: 'center' }}>
+              Answer Review
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {result.correctAnswers.map((answer, index) => (
+                <div
+                  key={answer.questionId}
+                  style={{
+                    background: answer.isCorrect ? 'var(--success-soft)' : 'var(--danger-soft)',
+                    border: `1px solid ${answer.isCorrect ? 'var(--secondary)' : 'var(--danger)'}`,
+                    borderRadius: 12,
+                    padding: '14px 16px'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
+                    <p style={{ fontWeight: 700, fontSize: 14 }}>
+                      {index + 1}. {answer.questionText}
+                    </p>
+                    <span className={`badge ${answer.isCorrect ? 'badge-success' : 'badge-danger'}`}>
+                      {answer.isCorrect ? 'Correct' : 'Wrong'}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 4 }}>
+                    Your answer: <strong style={{ color: 'var(--text-primary)' }}>{formatAnswer(answer.answer)}</strong>
+                  </p>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+                    Correct answer: <strong style={{ color: 'var(--text-primary)' }}>{formatAnswer(answer.correctAnswer)}</strong>
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
           <Link to={localStorage.getItem('token') ? '/dashboard' : '/'} className="btn btn-secondary">Go Home</Link>
           <button onClick={() => window.location.reload()} className="btn btn-primary">Submit Again</button>
@@ -207,37 +267,43 @@ export default function FormResponsePage() {
         {/* Respondent info */}
         <div className="card" style={{ padding: '20px 22px', marginBottom: 20 }}>
           <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 14 }}>Your Information</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-            <div className="form-group">
-              <label className="form-label">Name *</label>
-              <input
-                className="form-input"
-                placeholder="Your full name"
-                value={meta.name}
-                onChange={e => {
-                  const value = e.target.value;
-                  setMeta(m => ({ ...m, name: value }));
-                  setValidationErrors(v => ({ ...v, name: '' }));
-                }}
-              />
-              {validationErrors.name && <p className="form-error">{validationErrors.name}</p>}
+          {isAnonymousMode ? (
+            <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+              This form accepts anonymous responses. Your name and email will not be collected.
+            </p>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <div className="form-group">
+                <label className="form-label">Name *</label>
+                <input
+                  className="form-input"
+                  placeholder="Your full name"
+                  value={meta.name}
+                  onChange={e => {
+                    const value = e.target.value;
+                    setMeta(m => ({ ...m, name: value }));
+                    setValidationErrors(v => ({ ...v, name: '' }));
+                  }}
+                />
+                {validationErrors.name && <p className="form-error">{validationErrors.name}</p>}
+              </div>
+              <div className="form-group">
+                <label className="form-label">Email *</label>
+                <input
+                  className="form-input"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={meta.email}
+                  onChange={e => {
+                    const value = e.target.value;
+                    setMeta(m => ({ ...m, email: value }));
+                    setValidationErrors(v => ({ ...v, email: '' }));
+                  }}
+                />
+                {validationErrors.email && <p className="form-error">{validationErrors.email}</p>}
+              </div>
             </div>
-            <div className="form-group">
-              <label className="form-label">Email *</label>
-              <input
-                className="form-input"
-                type="email"
-                placeholder="your@email.com"
-                value={meta.email}
-                onChange={e => {
-                  const value = e.target.value;
-                  setMeta(m => ({ ...m, email: value }));
-                  setValidationErrors(v => ({ ...v, email: '' }));
-                }}
-              />
-              {validationErrors.email && <p className="form-error">{validationErrors.email}</p>}
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Questions */}
