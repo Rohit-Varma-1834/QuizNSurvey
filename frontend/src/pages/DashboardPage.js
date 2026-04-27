@@ -6,11 +6,10 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import Navbar from '../components/layout/Navbar';
 import FormCard from '../components/dashboard/FormCard';
-import { EmptyState, PageLoader, StatCard } from '../components/ui/Common';
+import { EmptyState, PageLoader } from '../components/ui/Common';
 import {
   HiOutlinePlusCircle, HiOutlineSearch,
-  HiOutlineViewGrid, HiOutlineViewList, HiOutlineChartBar,
-  HiOutlineClipboardList, HiOutlineGlobe, HiOutlineRefresh
+  HiOutlineViewGrid, HiOutlineViewList, HiOutlineRefresh
 } from 'react-icons/hi';
 
 export default function DashboardPage() {
@@ -131,115 +130,50 @@ export default function DashboardPage() {
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       <Navbar />
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 24px' }}>
+      <div className="page-container">
 
-        {/* ── Header ── */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 16 }}>
+        <div className="page-header">
           <div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 4 }}>
-              Hello, {user?.name?.split(' ')[0]} 👋
-            </h1>
+            <h1>Dashboard</h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
-              Manage your quizzes and surveys
+              Manage forms, track activity, and review performance.
             </p>
           </div>
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
             <button onClick={handleManualRefresh} className="btn btn-secondary btn-sm" title="Refresh dashboard">
               <HiOutlineRefresh size={16} />
             </button>
             <Link to="/forms/new" className="btn btn-primary">
-              <HiOutlinePlusCircle size={18} /> Create New Form
+              <HiOutlinePlusCircle size={18} /> New Form
             </Link>
           </div>
         </div>
 
-        {/* ── Stats row ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 32 }}>
-          <StatCard
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+          <DashboardStatCard
             label="Total Forms"
             value={statsLoading ? '…' : (stats?.stats?.totalForms ?? 0)}
-            icon={<HiOutlineClipboardList />}
-            color="var(--secondary)"
+            helper={`${forms.length} shown in current view`}
           />
-          <StatCard
+          <DashboardStatCard
             label="Total Responses"
             value={statsLoading ? '…' : (stats?.stats?.totalResponses ?? 0)}
-            icon={<HiOutlineChartBar />}
-            color="var(--accent)"
+            helper={`${weeklyTotal} in the last 7 days`}
           />
-          <StatCard
-            label="Published Forms"
+          <DashboardStatCard
+            label="Published"
             value={statsLoading ? '…' : (stats?.stats?.publishedForms ?? 0)}
-            icon={<HiOutlineGlobe />}
-            color="var(--primary)"
+            helper="Publicly available forms"
           />
-          <StatCard
-            label="Draft Forms"
+          <DashboardStatCard
+            label="Drafts"
             value={statsLoading ? '…' : (stats?.stats?.draftForms ?? 0)}
-            icon="📝"
-            color="var(--primary-dark)"
+            helper="Internal work in progress"
           />
         </div>
 
-        {/* ── Smart overview ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, marginBottom: 28 }}>
-          <div className="card" style={{ padding: '20px 22px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 14 }}>
-              <div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Response Activity</h3>
-                <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
-                  {weeklyTotal} response{weeklyTotal === 1 ? '' : 's'} in the last 7 days
-                </p>
-              </div>
-              <span className="badge badge-primary">Live snapshot</span>
-            </div>
-            {weeklyData.length > 0 ? (
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, minHeight: 140 }}>
-                {weeklyData.map((day) => (
-                  <div key={day._id} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{day.count}</div>
-                    <div style={{ width: '100%', maxWidth: 28, height: `${Math.max((day.count / weeklyMax) * 88, 8)}px`, borderRadius: 999, background: 'var(--brand-gradient)' }} />
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                      {new Date(day._id).toLocaleDateString('en-US', { weekday: 'short' })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div style={{ padding: '24px 0 12px', color: 'var(--text-secondary)', fontSize: 14 }}>
-                No response activity yet this week.
-              </div>
-            )}
-          </div>
-
-          <DashboardListCard
-            title="Recent Forms"
-            subtitle="Your newest drafts and published forms"
-            items={recentForms}
-            emptyMessage="Create your first form to see it here."
-            onOpen={(formId) => navigate(`/forms/${formId}/edit`)}
-            actionLabel="Open"
-          />
-
-          <DashboardListCard
-            title="Top Performing Forms"
-            subtitle="Forms getting the most responses"
-            items={topForms}
-            emptyMessage="Publish a form to start collecting responses."
-            onOpen={(formId) => navigate(`/forms/${formId}/analytics`)}
-            actionLabel="View"
-            showResponses
-          />
-        </div>
-
-        {/* ── Filters bar ── */}
-        <div style={{
-          display: 'flex', gap: 10, marginBottom: 24,
-          flexWrap: 'wrap', alignItems: 'center',
-          background: 'var(--bg-card)', padding: '14px 16px',
-          borderRadius: 12, border: '1px solid var(--border)'
-        }}>
-          {/* Search */}
+        <div className="section-card" style={{ marginBottom: 24, padding: '18px 18px 20px' }}>
+          <div className="toolbar-row" style={{ marginBottom: 18, background: 'var(--bg-secondary)' }}>
           <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
             <HiOutlineSearch style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} size={16} />
             <input
@@ -251,7 +185,7 @@ export default function DashboardPage() {
             />
           </div>
 
-          <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} className="form-input form-select" style={{ width: 130, fontSize: 13 }}>
+          <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} className="form-input form-select" style={{ width: 140, fontSize: 13 }}>
             <option value="">All Types</option>
             <option value="quiz">Quiz</option>
             <option value="survey">Survey</option>
@@ -271,46 +205,49 @@ export default function DashboardPage() {
             <option value="title">Title A–Z</option>
           </select>
 
-          {/* View toggle */}
-          <div style={{ display: 'flex', gap: 4, marginLeft: 'auto' }}>
-            <button onClick={() => setView('grid')} className={`btn btn-sm ${view === 'grid' ? 'btn-primary' : 'btn-secondary'}`} style={{ padding: '7px 10px' }}>
+          <div style={{ display: 'flex', gap: 4, marginLeft: 'auto', padding: 4, borderRadius: 10, border: '1px solid var(--border)', background: 'var(--bg-card)' }}>
+            <button onClick={() => setView('grid')} className={`btn btn-sm ${view === 'grid' ? 'btn-primary' : 'btn-ghost'}`} style={{ padding: '7px 10px' }}>
               <HiOutlineViewGrid size={16} />
             </button>
-            <button onClick={() => setView('list')} className={`btn btn-sm ${view === 'list' ? 'btn-primary' : 'btn-secondary'}`} style={{ padding: '7px 10px' }}>
+            <button onClick={() => setView('list')} className={`btn btn-sm ${view === 'list' ? 'btn-primary' : 'btn-ghost'}`} style={{ padding: '7px 10px' }}>
               <HiOutlineViewList size={16} />
             </button>
           </div>
-        </div>
+          </div>
 
-        {/* ── Forms grid / list ── */}
-        {loading ? (
-          <PageLoader />
-        ) : forms.length === 0 ? (
-          <EmptyState
-            icon="📋"
-            title={search || typeFilter || statusFilter ? 'No forms match your filters' : 'No forms yet'}
-            description={
-              search || typeFilter || statusFilter
-                ? 'Try adjusting your search or filters.'
-                : 'Create your first quiz or survey to get started!'
-            }
-            action={
-              !search && !typeFilter && !statusFilter && (
-                <Link to="/forms/new" className="btn btn-primary">
-                  <HiOutlinePlusCircle size={16} /> Create Your First Form
-                </Link>
-              )
-            }
-          />
-        ) : (
-          <>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 14 }}>
-              {forms.length} form{forms.length !== 1 ? 's' : ''}
-              {search || typeFilter || statusFilter ? ' found' : ''}
-            </p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
+            <div>
+              <h2 style={{ fontSize: 18, marginBottom: 4 }}>All Forms</h2>
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+                {forms.length} form{forms.length !== 1 ? 's' : ''}
+                {search || typeFilter || statusFilter ? ' match the current filters' : ' in your workspace'}
+              </p>
+            </div>
+          </div>
+
+          {loading ? (
+            <PageLoader />
+          ) : forms.length === 0 ? (
+            <EmptyState
+              icon="FM"
+              title={search || typeFilter || statusFilter ? 'No forms match your filters' : 'No forms yet'}
+              description={
+                search || typeFilter || statusFilter
+                  ? 'Try adjusting your search or filters.'
+                  : 'Create your first quiz or survey to get started.'
+              }
+              action={
+                !search && !typeFilter && !statusFilter && (
+                  <Link to="/forms/new" className="btn btn-primary">
+                    <HiOutlinePlusCircle size={16} /> Create Your First Form
+                  </Link>
+                )
+              }
+            />
+          ) : (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: view === 'grid' ? 'repeat(auto-fill, minmax(300px, 1fr))' : '1fr',
+              gridTemplateColumns: view === 'grid' ? 'repeat(auto-fill, minmax(320px, 1fr))' : '1fr',
               gap: 16
             }}>
               {forms.map(form => (
@@ -320,19 +257,98 @@ export default function DashboardPage() {
                   onDelete={handleDelete}
                   onDuplicate={handleDuplicate}
                   onPublish={handlePublish}
+                  view={view}
                 />
               ))}
             </div>
-          </>
-        )}
+          )}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+          <DashboardActivityCard weeklyData={weeklyData} weeklyMax={weeklyMax} weeklyTotal={weeklyTotal} />
+
+          <DashboardListCard
+            title="Recent Forms"
+            subtitle="Your newest drafts and published forms"
+            items={recentForms}
+            emptyMessage="Create your first form to see it here."
+            onOpen={(formId) => navigate(`/forms/${formId}/edit`)}
+            actionLabel="Open"
+          />
+
+          <DashboardListCard
+            title="Top Performing Forms"
+            subtitle="Forms with the most responses so far"
+            items={topForms}
+            emptyMessage="Publish a form to start collecting responses."
+            onOpen={(formId) => navigate(`/forms/${formId}/analytics`)}
+            actionLabel="View"
+            showResponses
+          />
+        </div>
       </div>
+    </div>
+  );
+}
+
+function DashboardStatCard({ label, value, helper }) {
+  return (
+    <div className="section-card" style={{ padding: '18px 20px' }}>
+      <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        {label}
+      </p>
+      <p style={{ fontSize: 34, fontWeight: 800, lineHeight: 1, marginBottom: 8 }}>
+        {value}
+      </p>
+      <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+        {helper}
+      </p>
+    </div>
+  );
+}
+
+function DashboardActivityCard({ weeklyData, weeklyMax, weeklyTotal }) {
+  return (
+    <div className="section-card">
+      <div style={{ marginBottom: 16 }}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Response Activity</h3>
+        <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
+          {weeklyTotal} response{weeklyTotal === 1 ? '' : 's'} recorded in the last 7 days
+        </p>
+      </div>
+
+      {weeklyData.length > 0 ? (
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, minHeight: 140 }}>
+          {weeklyData.map((day) => (
+            <div key={day._id} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{day.count}</div>
+              <div
+                style={{
+                  width: '100%',
+                  maxWidth: 28,
+                  height: `${Math.max((day.count / weeklyMax) * 88, 8)}px`,
+                  borderRadius: 999,
+                  background: day.count > 0 ? 'var(--primary)' : 'var(--border)'
+                }}
+              />
+              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                {new Date(day._id).toLocaleDateString('en-US', { weekday: 'short' })}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ padding: '24px 0 12px', color: 'var(--text-secondary)', fontSize: 14 }}>
+          No response activity yet this week.
+        </div>
+      )}
     </div>
   );
 }
 
 function DashboardListCard({ title, subtitle, items, emptyMessage, onOpen, actionLabel, showResponses = false }) {
   return (
-    <div className="card" style={{ padding: '20px 22px' }}>
+    <div className="section-card">
       <div style={{ marginBottom: 14 }}>
         <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>{title}</h3>
         <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>{subtitle}</p>
@@ -354,18 +370,27 @@ function DashboardListCard({ title, subtitle, items, emptyMessage, onOpen, actio
                 padding: '12px 14px',
                 borderRadius: 12,
                 border: '1px solid var(--border)',
-                background: 'var(--bg-secondary)',
+                background: 'var(--bg-card)',
                 cursor: 'pointer',
-                textAlign: 'left'
+                textAlign: 'left',
+                transition: 'border-color var(--transition), background var(--transition)'
+              }}
+              onMouseOver={e => {
+                e.currentTarget.style.borderColor = 'var(--border-strong)';
+                e.currentTarget.style.background = 'var(--bg-secondary)';
+              }}
+              onMouseOut={e => {
+                e.currentTarget.style.borderColor = 'var(--border)';
+                e.currentTarget.style.background = 'var(--bg-card)';
               }}
             >
               <div style={{ width: 10, height: 40, borderRadius: 999, background: form.coverColor || 'var(--primary)', flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: form.type === 'quiz' ? 'var(--primary)' : 'var(--secondary)' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: form.type === 'quiz' ? 'var(--primary)' : 'var(--text-secondary)' }}>
                     {form.type}
                   </span>
-                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{form.status}</span>
+                  <span className="badge badge-secondary" style={{ fontSize: 11 }}>{form.status}</span>
                 </div>
                 <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {form.title}

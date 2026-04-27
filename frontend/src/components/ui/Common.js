@@ -1,6 +1,23 @@
 // Contains shared small UI pieces used across many pages.
 import React from 'react';
 
+const isPlainText = (value) => typeof value === 'string' && /^[a-z0-9\s]+$/i.test(value.trim());
+
+const buildMonogram = (label = '') => (
+  label
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('') || 'QS'
+);
+
+const renderVisual = (visual, fallbackLabel) => {
+  if (React.isValidElement(visual)) return visual;
+  if (isPlainText(visual)) return visual;
+  return buildMonogram(fallbackLabel);
+};
+
 export function EmptyState({ icon, title, description, action }) {
   return (
     <div style={{
@@ -9,11 +26,15 @@ export function EmptyState({ icon, title, description, action }) {
     }}>
       <div style={{
         width: 72, height: 72, borderRadius: 20,
-        background: 'var(--bg-secondary)',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 32
+        fontSize: 16,
+        fontWeight: 700,
+        color: 'var(--text-secondary)',
+        letterSpacing: '0.04em'
       }}>
-        {icon || '📋'}
+        {renderVisual(icon, title)}
       </div>
       <div>
         <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>{title}</h3>
@@ -73,9 +94,9 @@ export function StatCard({ label, value, icon, color = 'var(--primary)', trend }
         <div style={{
           width: 44, height: 44, borderRadius: 12,
           background: `${color}18`, display: 'flex',
-          alignItems: 'center', justifyContent: 'center', color, fontSize: 22
+          alignItems: 'center', justifyContent: 'center', color, fontSize: 14, fontWeight: 700, letterSpacing: '0.04em'
         }}>
-          {icon}
+          {renderVisual(icon, label)}
         </div>
       </div>
     </div>

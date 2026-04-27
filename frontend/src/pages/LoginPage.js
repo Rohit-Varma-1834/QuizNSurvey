@@ -105,7 +105,7 @@ export function RegisterPage() {
     setLoading(true);
     try {
       await register(form.name, form.email, form.password);
-      toast.success('Account created! Welcome to QuiznSurvey 🎉');
+      toast.success('Account created! Welcome to QuiznSurvey.');
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');

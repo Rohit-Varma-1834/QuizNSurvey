@@ -43,7 +43,7 @@ export default function ShareModal({ isOpen, onClose, form }) {
             borderRadius: 10, padding: '12px 16px',
             fontSize: 13, color: 'var(--primary-dark)'
           }}>
-            ⚠️ This form is not published yet. Publish it first so respondents can access it.
+            This form is not published yet. Publish it first so respondents can access it.
           </div>
         )}
 

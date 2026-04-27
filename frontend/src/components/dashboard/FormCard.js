@@ -15,7 +15,7 @@ const STATUS_COLORS = {
   closed: { bg: 'var(--danger-soft)', text: 'var(--danger)', dot: 'var(--danger)' },
 };
 
-export default function FormCard({ form, onDelete, onDuplicate, onPublish }) {
+export default function FormCard({ form, onDelete, onDuplicate, onPublish, view = 'grid' }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
@@ -56,77 +56,129 @@ export default function FormCard({ form, onDelete, onDuplicate, onPublish }) {
     { icon: HiOutlineTrash, label: 'Delete', action: () => { setMenuOpen(false); setDeleteOpen(true); }, danger: true },
   ];
 
+  const createdDate = new Date(form.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const handleShareOpen = () => setShareOpen(true);
+  const cardPadding = '18px 18px 16px';
+  const isGridView = view !== 'list';
+
   return (
     <>
       <div className="card" style={{
-        padding: 0, overflow: 'hidden',
-        transition: 'transform 0.2s, box-shadow 0.2s',
+        padding: 0,
+        overflow: 'hidden',
+        transition: 'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
       }}
-        onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-lg)'; }}
-        onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = ''; }}
+        onMouseOver={e => {
+          e.currentTarget.style.transform = 'translateY(-1px)';
+          e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+          e.currentTarget.style.borderColor = 'var(--border-strong)';
+        }}
+        onMouseOut={e => {
+          e.currentTarget.style.transform = 'none';
+          e.currentTarget.style.boxShadow = '';
+          e.currentTarget.style.borderColor = 'var(--border)';
+        }}
       >
-        <div style={{ height: 6, background: form.coverColor || 'var(--primary)' }} />
+        <div style={{ height: 4, background: form.coverColor || 'var(--primary)' }} />
 
-        <div style={{ padding: '16px 18px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+        <div style={{ padding: cardPadding }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 16 }}>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
                 <span style={{
-                  fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-                  color: form.type === 'quiz' ? 'var(--primary)' : 'var(--secondary)',
-                  background: form.type === 'quiz' ? 'var(--primary-light)' : 'var(--success-soft)',
-                  padding: '2px 8px', borderRadius: 6
+                  fontSize: 11,
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  color: form.type === 'quiz' ? 'var(--primary)' : 'var(--text-secondary)',
+                  background: form.type === 'quiz' ? 'var(--primary-light)' : 'var(--bg-secondary)',
+                  padding: '4px 8px',
+                  borderRadius: 999
                 }}>
                   {form.type}
                 </span>
                 <span style={{
-                  display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600,
-                  color: status.text, background: status.bg, padding: '2px 8px', borderRadius: 6
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: status.text,
+                  background: status.bg,
+                  padding: '4px 8px',
+                  borderRadius: 999
                 }}>
                   <span style={{ width: 5, height: 5, borderRadius: '50%', background: status.dot }} />
                   {form.status}
                 </span>
               </div>
               <h3 style={{
-                fontSize: 15, fontWeight: 700, marginBottom: 4,
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                fontSize: 16,
+                fontWeight: 700,
+                marginBottom: 6,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: isGridView ? 'nowrap' : 'normal'
               }}>
                 {form.title}
               </h3>
               <p style={{
-                fontSize: 12, color: 'var(--text-secondary)',
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                fontSize: 13,
+                color: 'var(--text-secondary)',
+                lineHeight: 1.6,
+                display: '-webkit-box',
+                WebkitLineClamp: isGridView ? 2 : 1,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden'
               }}>
                 {form.description || 'No description'}
               </p>
             </div>
 
-            {/* Menu button */}
             <div style={{ flexShrink: 0 }}>
               <button
                 ref={btnRef}
                 onClick={handleMenuOpen}
                 className="btn btn-ghost btn-sm"
-                style={{ padding: '5px 7px' }}
+                style={{ padding: '6px 8px' }}
+                aria-label="More actions"
               >
                 <HiOutlineDotsVertical size={16} />
               </button>
             </div>
           </div>
 
-          {/* Stats row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-            <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-              <strong style={{ color: 'var(--text-primary)' }}>{form.totalResponses || 0}</strong> responses
-            </span>
-            <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-              {new Date(form.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-            </span>
-            {form.settings?.timeLimit && (
-              <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                ⏱ {form.settings.timeLimit}m
-              </span>
-            )}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isGridView ? 'repeat(2, minmax(0, 1fr))' : 'repeat(4, minmax(0, 1fr))',
+            gap: 12,
+            padding: '12px 0 14px',
+            borderTop: '1px solid var(--border)',
+            borderBottom: '1px solid var(--border)',
+            marginBottom: 14
+          }}>
+            <MetaItem label="Created" value={createdDate} />
+            <MetaItem label="Responses" value={String(form.totalResponses || 0)} />
+            {!isGridView && <MetaItem label="Status" value={form.status} />}
+            {!isGridView && <MetaItem label="Type" value={form.type} />}
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button onClick={() => navigate(`/forms/${form._id}/edit`)} className="btn btn-secondary btn-sm">
+                <HiOutlinePencil size={14} /> Edit
+              </button>
+              <button onClick={() => navigate(`/forms/${form._id}/responses`)} className="btn btn-ghost btn-sm">
+                <HiOutlineEye size={14} /> Responses
+              </button>
+              <button onClick={handleShareOpen} className="btn btn-ghost btn-sm">
+                <HiOutlineShare size={14} /> Share
+              </button>
+            </div>
+
+            <button onClick={() => navigate(`/forms/${form._id}/analytics`)} className="btn btn-ghost btn-sm">
+              <HiOutlineChartBar size={14} /> Analytics
+            </button>
           </div>
         </div>
       </div>
@@ -192,5 +244,18 @@ export default function FormCard({ form, onDelete, onDuplicate, onPublish }) {
         form={form}
       />
     </>
+  );
+}
+
+function MetaItem({ label, value }) {
+  return (
+    <div>
+      <p style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
+        {label}
+      </p>
+      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
+        {value}
+      </p>
+    </div>
   );
 }

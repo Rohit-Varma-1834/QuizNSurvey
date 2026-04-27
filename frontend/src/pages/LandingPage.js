@@ -3,26 +3,42 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 
-const FEATURES = [
-  { icon: '🧠', title: 'Smart Quizzes', desc: 'Create auto-graded quizzes with multiple question types, timers, and instant scoring.' },
-  { icon: '📊', title: 'Surveys & Polls', desc: 'Collect feedback and opinions with beautiful, easy-to-fill survey forms.' },
-  { icon: '📱', title: 'QR Code Sharing', desc: 'Generate QR codes instantly. Let anyone scan and respond from their phone.' },
-  { icon: '📈', title: 'Real-time Analytics', desc: 'Visualize responses with interactive charts, breakdowns, and score distributions.' },
-  { icon: '🔒', title: 'Secure & Private', desc: 'JWT auth, protected dashboards, and optional anonymous responses for surveys.' },
-  { icon: '⚡', title: 'Instant Results', desc: 'Quiz takers see their score immediately after submitting. No waiting.' },
+const OVERVIEW_ITEMS = [
+  {
+    title: 'AI question generation',
+    description: 'Generate quiz or survey questions from a prompt, then review and edit them before publishing.',
+  },
+  {
+    title: 'Public links and QR sharing',
+    description: 'Publish a form once and collect responses from a public link or QR code without requiring creator login.',
+  },
+  {
+    title: 'Analytics and exports',
+    description: 'Track responses, review charts, export CSV data, and download PDF analytics reports.',
+  },
+  {
+    title: 'Privacy and feedback tools',
+    description: 'Support anonymous survey responses, AI summaries, and sentiment analysis for text feedback.',
+  },
 ];
 
-const STEPS = [
-  { n: '01', title: 'Create your form', desc: 'Choose quiz or survey, add questions with our drag-and-drop builder.' },
-  { n: '02', title: 'Publish & Share', desc: 'Get a public link and QR code. Share via email, social, or print the QR code.' },
-  { n: '03', title: 'Collect Responses', desc: 'Participants answer on any device — desktop or mobile.' },
-  { n: '04', title: 'Analyze Results', desc: 'View detailed analytics, charts, and individual responses on your dashboard.' },
-];
-
-const TESTIMONIALS = [
-  { name: 'Sarah Mitchell', role: 'High School Teacher', avatar: '👩‍🏫', text: 'QuiznSurvey transformed how I assess my students. The QR code feature means they just scan and go — no login needed!' },
-  { name: 'James Okonkwo', role: 'Event Organizer', avatar: '🎯', text: 'I use it for event feedback forms. The analytics dashboard gives me exactly what I need to improve future events.' },
-  { name: 'Dr. Priya Sharma', role: 'UX Researcher', avatar: '🔬', text: 'Anonymous survey mode and the question breakdown charts make it perfect for user research. Highly recommended.' },
+const FEATURE_CARDS = [
+  {
+    title: 'Create with AI',
+    description: 'Start from a prompt and turn it into editable questions inside the builder.',
+  },
+  {
+    title: 'Share publicly',
+    description: 'Use a public link or QR code so respondents can submit without extra friction.',
+  },
+  {
+    title: 'Review insights',
+    description: 'See response trends, pass rates, question breakdowns, and AI-generated summaries.',
+  },
+  {
+    title: 'Export results',
+    description: 'Download CSV response data and PDF reports for analysis, presentation, or record keeping.',
+  },
 ];
 
 export default function LandingPage() {
@@ -30,182 +46,255 @@ export default function LandingPage() {
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       <Navbar />
 
-      {/* Hero */}
-      <section style={{
-        padding: '80px 24px 100px',
-        background: 'linear-gradient(160deg, rgba(var(--bg-rgb), 0.96) 0%, rgba(255,255,255,0.92) 38%, rgba(var(--secondary-rgb), 0.13) 100%)',
-        textAlign: 'center', position: 'relative', overflow: 'hidden'
-      }}>
-        {/* Background orbs */}
-        <div style={{ position: 'absolute', top: -100, left: '10%', width: 420, height: 420, borderRadius: '50%', background: 'radial-gradient(circle, rgba(var(--primary-rgb),0.22) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: -80, right: '10%', width: 380, height: 380, borderRadius: '50%', background: 'radial-gradient(circle, rgba(var(--secondary-rgb),0.22) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      <main>
+        <section style={{ padding: '72px 0 56px' }}>
+          <div className="page-container" style={{ display: 'grid', gap: 40 }}>
+            <div style={{ maxWidth: 760 }}>
+              <p style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '6px 12px',
+                borderRadius: '9999px',
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border)',
+                color: 'var(--text-secondary)',
+                fontSize: 13,
+                fontWeight: 600,
+                marginBottom: 18
+              }}>
+                QuiznSurvey
+              </p>
 
-        <div style={{ maxWidth: 760, margin: '0 auto', position: 'relative' }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: 'rgba(255,255,255,0.72)', border: '1px solid rgba(var(--primary-rgb),0.14)',
-            borderRadius: 99, padding: '6px 16px', marginBottom: 28,
-            boxShadow: 'var(--shadow-sm)', fontSize: 13, fontWeight: 600, color: 'var(--primary)'
-          }}>
-            <span style={{ background: 'var(--brand-gradient)', color: 'white', borderRadius: 99, padding: '1px 8px', fontSize: 11 }}>NEW</span>
-            QR Code sharing now available 🎉
-          </div>
+              <h1 style={{ maxWidth: 720, marginBottom: 16 }}>
+                Create quizzes and surveys with AI-powered insights.
+              </h1>
 
-          <h1 style={{
-            fontSize: 'clamp(36px, 6vw, 64px)',
-            fontFamily: 'var(--font-display)',
-            fontWeight: 800, lineHeight: 1.1,
-            marginBottom: 24,
-            background: 'var(--brand-gradient)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
-          }}>
-            Create Quizzes & Surveys<br />That People Love
-          </h1>
+              <p style={{
+                maxWidth: 720,
+                fontSize: 16,
+                lineHeight: 1.7,
+                color: 'var(--text-secondary)',
+                marginBottom: 28
+              }}>
+                Build forms, collect public responses, and analyze results with summaries,
+                sentiment, exports, and dashboards.
+              </p>
 
-          <p style={{ fontSize: 18, color: 'var(--text-secondary)', maxWidth: 560, margin: '0 auto 36px', lineHeight: 1.7 }}>
-            Build beautiful quizzes and surveys in minutes. Share via link or QR code.
-            Analyze responses with real-time insights.
-          </p>
-
-          <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/register" className="btn btn-primary btn-xl" style={{ boxShadow: '0 14px 34px rgba(var(--primary-rgb),0.26)' }}>
-              Start for Free →
-            </Link>
-            <Link to="/login" className="btn btn-secondary btn-xl">
-              Sign In
-            </Link>
-          </div>
-
-          <p style={{ marginTop: 20, fontSize: 13, color: 'var(--text-muted)' }}>
-            No credit card required · Free forever plan
-          </p>
-        </div>
-
-        {/* Mock dashboard preview */}
-        <div style={{
-          maxWidth: 900, margin: '60px auto 0',
-          background: 'rgba(255,255,255,0.9)', borderRadius: 20,
-          border: '1px solid rgba(var(--primary-rgb),0.14)', boxShadow: '0 24px 80px rgba(0,40,120,0.16)',
-          overflow: 'hidden', animation: 'fadeInUp 0.8s ease'
-        }}>
-          <div style={{ background: 'var(--brand-gradient-soft)', padding: '12px 16px', display: 'flex', gap: 6 }}>
-            {['var(--danger)', 'var(--accent)', 'var(--secondary)'].map(c => (
-              <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
-            ))}
-            <div style={{ flex: 1, background: 'var(--border)', borderRadius: 6, height: 10, marginLeft: 8, maxWidth: 200 }} />
-          </div>
-          <div style={{ padding: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16 }}>
-            {[
-              { label: 'Total Forms', value: '24', color: 'var(--primary)' },
-              { label: 'Responses', value: '1,847', color: 'var(--secondary)' },
-              { label: 'Avg Score', value: '78%', color: 'var(--accent)' },
-              { label: 'Published', value: '18', color: 'var(--primary-dark)' },
-            ].map(s => (
-              <div key={s.label} style={{ background: 'var(--brand-gradient-soft)', borderRadius: 12, padding: '16px 20px' }}>
-                <p style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</p>
-                <p style={{ fontSize: 26, fontWeight: 800, color: s.color, fontFamily: 'var(--font-display)' }}>{s.value}</p>
+              <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}>
+                <Link to="/register" className="btn btn-primary btn-lg">
+                  Start Building
+                </Link>
+                <a
+                  href="#product-overview"
+                  className="btn btn-ghost btn-lg"
+                  style={{ paddingLeft: 0, paddingRight: 0 }}
+                >
+                  View Product Overview
+                </a>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </div>
 
-      {/* Features */}
-      <section id="features" style={{ padding: '80px 24px', position: 'relative' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 52 }}>
-            <h2 style={{ fontSize: 'clamp(28px, 4vw, 40px)', marginBottom: 14 }}>Everything you need to collect insights</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 17, maxWidth: 520, margin: '0 auto' }}>
-              From classroom quizzes to enterprise surveys — one platform handles it all.
-            </p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
-            {FEATURES.map((f, i) => (
-              <div key={i} className="card" style={{ padding: 24, animation: `fadeInUp ${0.3 + i * 0.1}s ease` }}>
-                <div style={{ fontSize: 36, marginBottom: 14 }}>{f.icon}</div>
-                <h3 style={{ fontSize: 17, marginBottom: 8 }}>{f.title}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6 }}>{f.desc}</p>
+            <div className="section-card" style={{ padding: 0, overflow: 'hidden' }}>
+              <div style={{
+                padding: '14px 18px',
+                borderBottom: '1px solid var(--border)',
+                background: 'var(--bg-card)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 12,
+                flexWrap: 'wrap'
+              }}>
+                <div>
+                  <h2 style={{ fontSize: 18, marginBottom: 4 }}>Product dashboard preview</h2>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+                    Form management, responses, analytics, exports, and AI tools in one workspace.
+                  </p>
+                </div>
+                <span className="badge badge-secondary">Preview</span>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* How it works */}
-      <section id="how-it-works" style={{ padding: '80px 24px', background: 'var(--brand-gradient-soft)' }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 52 }}>
-            <h2 style={{ fontSize: 'clamp(28px, 4vw, 40px)', marginBottom: 14 }}>Up and running in minutes</h2>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 24 }}>
-            {STEPS.map((s, i) => (
-              <div key={i} style={{ textAlign: 'center' }}>
+              <div style={{ padding: 24, background: 'var(--bg-secondary)' }}>
                 <div style={{
-                  width: 56, height: 56, borderRadius: 16,
-                  background: 'var(--brand-gradient)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  margin: '0 auto 16px',
-                  fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 800, color: 'white'
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 16,
+                  overflow: 'hidden'
                 }}>
-                  {s.n}
-                </div>
-                <h3 style={{ fontSize: 16, marginBottom: 8 }}>{s.title}</h3>
-                <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section style={{ padding: '80px 24px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <h2 style={{ textAlign: 'center', fontSize: 'clamp(28px, 4vw, 40px)', marginBottom: 52 }}>Loved by teachers, researchers & businesses</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
-            {TESTIMONIALS.map((t, i) => (
-              <div key={i} className="card" style={{ padding: 24 }}>
-                <p style={{ fontSize: 15, lineHeight: 1.7, color: 'var(--text-secondary)', marginBottom: 20, fontStyle: 'italic' }}>
-                  "{t.text}"
-                </p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 42, height: 42, borderRadius: '50%', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>
-                    {t.avatar}
+                  <div style={{
+                    padding: '12px 16px',
+                    borderBottom: '1px solid var(--border)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8
+                  }}>
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--border-strong)' }} />
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--border)' }} />
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--border)' }} />
+                    <div style={{
+                      marginLeft: 8,
+                      padding: '4px 10px',
+                      borderRadius: 9999,
+                      background: 'var(--bg-secondary)',
+                      color: 'var(--text-secondary)',
+                      fontSize: 12
+                    }}>
+                      Dashboard
+                    </div>
                   </div>
-                  <div>
-                    <p style={{ fontWeight: 700, fontSize: 14 }}>{t.name}</p>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>{t.role}</p>
+
+                  <div style={{
+                    padding: 24,
+                    display: 'grid',
+                    gridTemplateColumns: '2fr 1fr',
+                    gap: 18
+                  }}>
+                    <div style={{ display: 'grid', gap: 14 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12 }}>
+                        {['Forms', 'Responses', 'Analytics'].map((label) => (
+                          <div key={label} style={{
+                            padding: '18px 16px',
+                            borderRadius: 14,
+                            border: '1px solid var(--border)',
+                            background: 'var(--bg-card)'
+                          }}>
+                            <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 8 }}>{label}</p>
+                            <div style={{ width: '70%', height: 12, borderRadius: 9999, background: 'var(--bg-secondary)', marginBottom: 8 }} />
+                            <div style={{ width: '45%', height: 8, borderRadius: 9999, background: 'var(--border)' }} />
+                          </div>
+                        ))}
+                      </div>
+
+                      <div style={{
+                        padding: 18,
+                        borderRadius: 14,
+                        border: '1px solid var(--border)',
+                        background: 'var(--bg-card)'
+                      }}>
+                        <div style={{ width: 180, height: 14, borderRadius: 9999, background: 'var(--bg-secondary)', marginBottom: 18 }} />
+                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, minHeight: 160 }}>
+                          {[52, 84, 62, 94, 76, 108, 88].map((height, index) => (
+                            <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                              <div style={{
+                                width: '100%',
+                                maxWidth: 28,
+                                height,
+                                borderRadius: 9999,
+                                background: index === 5 ? 'var(--primary)' : 'var(--border)'
+                              }} />
+                              <div style={{ width: 20, height: 8, borderRadius: 9999, background: 'var(--bg-secondary)' }} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gap: 14 }}>
+                      <div style={{
+                        padding: 18,
+                        borderRadius: 14,
+                        border: '1px solid var(--border)',
+                        background: 'var(--bg-card)'
+                      }}>
+                        <div style={{ width: 120, height: 14, borderRadius: 9999, background: 'var(--bg-secondary)', marginBottom: 14 }} />
+                        <div style={{ display: 'grid', gap: 10 }}>
+                          {[1, 2, 3].map((item) => (
+                            <div key={item} style={{
+                              padding: '10px 12px',
+                              borderRadius: 12,
+                              background: 'var(--bg-secondary)',
+                              border: '1px solid var(--border)'
+                            }}>
+                              <div style={{ width: '85%', height: 10, borderRadius: 9999, background: 'var(--border-strong)', marginBottom: 8 }} />
+                              <div style={{ width: '55%', height: 8, borderRadius: 9999, background: 'var(--border)' }} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div style={{
+                        padding: 18,
+                        borderRadius: 14,
+                        border: '1px solid var(--border)',
+                        background: 'var(--bg-card)'
+                      }}>
+                        <div style={{ width: 110, height: 14, borderRadius: 9999, background: 'var(--bg-secondary)', marginBottom: 14 }} />
+                        <div style={{ display: 'grid', gap: 10 }}>
+                          {[72, 54, 88].map((width, index) => (
+                            <div key={index}>
+                              <div style={{ width: `${width}%`, height: 10, borderRadius: 9999, background: index === 2 ? 'var(--primary)' : 'var(--border)' }} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CTA */}
-      <section style={{
-        padding: '80px 24px',
-        background: 'var(--brand-gradient)',
-        textAlign: 'center'
-      }}>
-        <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: 'white', marginBottom: 16 }}>
-          Ready to start collecting insights?
-        </h2>
-        <p style={{ color: 'rgba(255,255,255,0.76)', fontSize: 17, marginBottom: 36 }}>
-          Join thousands of creators who trust QuiznSurvey.
-        </p>
-        <Link to="/register" className="btn btn-xl" style={{ background: 'rgba(255,255,255,0.96)', color: 'var(--primary)', fontWeight: 700, boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
-          Create Your First Form — Free
-        </Link>
-      </section>
+        <section id="product-overview" style={{ padding: '8px 0 24px' }}>
+          <div className="page-container">
+            <div style={{ maxWidth: 720, marginBottom: 24 }}>
+              <h2 style={{ marginBottom: 10 }}>Product overview</h2>
+              <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                QuiznSurvey helps creators build forms, collect responses through public links,
+                and review the results with practical analytics and AI-assisted summaries.
+              </p>
+            </div>
 
-      {/* Footer */}
-      <footer style={{ padding: '32px 24px', background: 'linear-gradient(135deg, rgba(var(--primary-rgb),0.96) 0%, rgba(var(--secondary-rgb),0.82) 100%)', textAlign: 'center' }}>
-        <p style={{ color: 'rgba(237,242,244,0.72)', fontSize: 14 }}>
-          © {new Date().getFullYear()} QuiznSurvey. Built with ❤️ for creators everywhere.
-        </p>
-      </footer>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+              {OVERVIEW_ITEMS.map((item) => (
+                <div key={item.title} className="section-card">
+                  <h3 style={{ marginBottom: 8 }}>{item.title}</h3>
+                  <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                    {item.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section style={{ padding: '24px 0 48px' }}>
+          <div className="page-container">
+            <div style={{ maxWidth: 680, marginBottom: 24 }}>
+              <h2 style={{ marginBottom: 10 }}>Core features</h2>
+              <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                The platform focuses on the full workflow: authoring, publishing, collecting,
+                reviewing, and exporting results.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+              {FEATURE_CARDS.map((feature) => (
+                <div key={feature.title} className="section-card">
+                  <h3 style={{ marginBottom: 8 }}>{feature.title}</h3>
+                  <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                    {feature.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section style={{ padding: '0 0 80px' }}>
+          <div className="page-container">
+            <div className="section-card" style={{ textAlign: 'center', padding: '40px 24px' }}>
+              <h2 style={{ marginBottom: 12 }}>Start building your first AI-powered form.</h2>
+              <p style={{ maxWidth: 620, margin: '0 auto 24px', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                Create a quiz or survey, publish it with a public link, and review the results from one dashboard.
+              </p>
+              <Link to="/register" className="btn btn-primary btn-lg">
+                Create Account
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

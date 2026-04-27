@@ -177,7 +177,7 @@ export default function ProfilePage() {
 
         {/* Danger zone */}
         <div className="card" style={{ padding: '24px', border: '1px solid color-mix(in srgb, var(--danger) 28%, var(--bg-secondary) 72%)' }}>
-          <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--danger)', marginBottom: 8 }}>⚠️ Danger Zone</h3>
+          <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--danger)', marginBottom: 8 }}>Danger Zone</h3>
           <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
             Permanently delete your account and all your forms and responses. This cannot be undone.
           </p>
