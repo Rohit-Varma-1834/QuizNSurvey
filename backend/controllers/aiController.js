@@ -24,6 +24,20 @@ const uniqueStrings = (values = []) => {
     });
 };
 
+const extractQuestionPromptSettings = (aiPrompt) => {
+  const normalizedPrompt = trimText(aiPrompt, 4000);
+  const explicitCountMatch =
+    normalizedPrompt.match(/\b(?:create|generate|make|build)\s+([1-9]|1[0-5])\b/i) ||
+    normalizedPrompt.match(/\b([1-9]|1[0-5])\s+(?:easy|medium|hard)?(?:\s+[a-z-]+){0,3}\s+questions?\b/i);
+  const difficultyMatch = normalizedPrompt.match(/\b(easy|medium|hard)\b/i);
+
+  return {
+    normalizedPrompt,
+    questionCount: explicitCountMatch ? Number.parseInt(explicitCountMatch[1], 10) : 5,
+    difficulty: difficultyMatch ? difficultyMatch[1].toLowerCase() : 'medium',
+  };
+};
+
 const buildQuestionSchema = (formType) => {
   if (formType === 'quiz') {
     return {
@@ -39,10 +53,10 @@ const buildQuestionSchema = (formType) => {
             items: {
               type: 'object',
               additionalProperties: false,
-              required: ['type', 'question', 'description', 'required', 'options', 'correctAnswer', 'points'],
+              required: ['type', 'questionText', 'description', 'required', 'options', 'correctAnswer', 'points'],
               properties: {
                 type: { type: 'string', enum: ['multiple_choice'] },
-                question: { type: 'string' },
+                questionText: { type: 'string' },
                 description: { type: 'string' },
                 required: { type: 'boolean' },
                 options: {
@@ -72,10 +86,10 @@ const buildQuestionSchema = (formType) => {
           items: {
             type: 'object',
             additionalProperties: false,
-            required: ['type', 'question', 'description', 'required', 'options', 'ratingMax'],
+            required: ['type', 'questionText', 'description', 'required', 'options', 'ratingMax'],
             properties: {
               type: { type: 'string', enum: ['multiple_choice', 'short_answer', 'paragraph', 'rating'] },
-              question: { type: 'string' },
+              questionText: { type: 'string' },
               description: { type: 'string' },
               required: { type: 'boolean' },
               options: {
@@ -91,33 +105,33 @@ const buildQuestionSchema = (formType) => {
   };
 };
 
-const buildPrompt = ({ topic, audience, goal, formType, questionCount, difficulty }) => {
+const buildPrompt = ({ aiPrompt, formType, questionCount, difficulty }) => {
   const lines = [
-    `Topic: ${topic}`,
-    `Audience: ${audience || 'General audience'}`,
-    `Goal: ${goal || 'Create helpful questions for the topic'}`,
+    `Creator prompt: ${aiPrompt}`,
     `Form type: ${formType}`,
     `Question count: ${questionCount}`,
     `Difficulty: ${difficulty}`,
+    'Return valid JSON only.',
+    'Return exactly one JSON object with this shape: { "questions": [...] }.',
   ];
 
   if (formType === 'quiz') {
     lines.push(
-      'Create exactly the requested number of quiz questions.',
-      'Every question must be multiple_choice.',
-      'Each question must include 4 concise options.',
-      'Each question must have exactly one correctAnswer that matches one of the options exactly.',
-      'Use points between 1 and 5.',
-      'Keep wording clear and classroom-friendly.'
+      'Generate exactly the requested number of quiz questions.',
+      'Every question must be type "multiple_choice".',
+      'Use the key "questionText" for the question wording.',
+      'Each question must include exactly 4 concise options.',
+      'Each question must have exactly one correctAnswer that matches one option exactly.',
+      'Each question must include points as an integer from 1 to 5.'
     );
   } else {
     lines.push(
-      'Create exactly the requested number of survey questions.',
-      'Use a thoughtful mix of multiple_choice, short_answer, paragraph, and rating when appropriate.',
-      'Use multiple_choice only when options are genuinely useful.',
-      'For non-multiple_choice questions, return an empty options array.',
-      'For rating questions, use a ratingMax between 3 and 10.',
-      'Keep the questions practical and useful for collecting feedback or opinions.'
+      'Generate exactly the requested number of survey questions.',
+      'Allowed question types are only "multiple_choice", "short_answer", "paragraph", and "rating".',
+      'Use the key "questionText" for the question wording.',
+      'For multiple_choice, include an options array with at least 2 options.',
+      'For short_answer and paragraph, return an empty options array.',
+      'For rating, return an empty options array and include ratingMax between 3 and 10.'
     );
   }
 
@@ -129,7 +143,47 @@ const extractOutputText = (payload) => {
     return payload.output_text.trim();
   }
 
+  const nestedText = (payload?.output || [])
+    .flatMap((item) => item?.content || [])
+    .map((content) => {
+      if (typeof content?.text === 'string') return content.text;
+      if (typeof content?.output_text === 'string') return content.output_text;
+      return '';
+    })
+    .join('\n')
+    .trim();
+
+  if (nestedText) return nestedText;
+
   return '';
+};
+
+const safeParseJsonObject = (text) => {
+  const trimmed = trimText(text, 12000);
+  if (!trimmed) return null;
+
+  const candidates = [trimmed];
+  const fenceMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fenceMatch?.[1]) candidates.push(fenceMatch[1].trim());
+
+  const firstBrace = trimmed.indexOf('{');
+  const lastBrace = trimmed.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    candidates.push(trimmed.slice(firstBrace, lastBrace + 1));
+  }
+
+  for (const candidate of candidates) {
+    try {
+      const parsed = JSON.parse(candidate);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        return parsed;
+      }
+    } catch (error) {
+      // Try next candidate.
+    }
+  }
+
+  return null;
 };
 
 const answerToText = (answer) => {
@@ -360,7 +414,7 @@ const normalizeSentimentOutput = (sentiment) => {
 };
 
 const normalizeQuizQuestion = (question, index) => {
-  const questionText = trimText(question.question);
+  const questionText = trimText(question.questionText || question.question || question.text);
   const description = trimText(question.description, 300);
   const options = uniqueStrings(question.options);
   const correctAnswer = trimText(question.correctAnswer, 120);
@@ -394,7 +448,7 @@ const normalizeQuizQuestion = (question, index) => {
 
 const normalizeSurveyQuestion = (question, index) => {
   const type = trimText(question.type, 40);
-  const questionText = trimText(question.question);
+  const questionText = trimText(question.questionText || question.question || question.text);
   const description = trimText(question.description, 300);
   const options = uniqueStrings(question.options);
   const ratingMax = Number.isFinite(Number(question.ratingMax))
@@ -426,11 +480,13 @@ const normalizeSurveyQuestion = (question, index) => {
 };
 
 const validateAndNormalizeQuestions = (formType, questions, questionCount) => {
-  if (!Array.isArray(questions) || questions.length !== questionCount) {
-    throw new Error(`AI must return exactly ${questionCount} question${questionCount === 1 ? '' : 's'}`);
+  if (!Array.isArray(questions) || questions.length === 0) {
+    throw new Error('AI must return a non-empty questions array');
   }
 
-  return questions.map((question, index) => (
+  const limitedQuestions = questions.slice(0, questionCount);
+
+  return limitedQuestions.map((question, index) => (
     formType === 'quiz'
       ? normalizeQuizQuestion(question, index)
       : normalizeSurveyQuestion(question, index)
@@ -438,15 +494,12 @@ const validateAndNormalizeQuestions = (formType, questions, questionCount) => {
 };
 
 exports.generateQuestions = async (req, res) => {
-  const topic = trimText(req.body.topic, 200);
-  const audience = trimText(req.body.audience, 200);
-  const goal = trimText(req.body.goal, 300);
+  const aiPrompt = trimText(req.body.aiPrompt, 4000);
   const formType = trimText(req.body.formType, 20);
-  const difficulty = trimText(req.body.difficulty, 20).toLowerCase();
-  const questionCount = Number.parseInt(req.body.questionCount, 10);
+  const { normalizedPrompt, questionCount, difficulty } = extractQuestionPromptSettings(aiPrompt);
 
-  if (!topic) {
-    return res.status(400).json({ success: false, message: 'Topic is required' });
+  if (!aiPrompt) {
+    return res.status(400).json({ success: false, message: 'AI prompt is required' });
   }
 
   if (!QUIZ_FORM_TYPES.has(formType) && formType !== 'survey') {
@@ -455,10 +508,6 @@ exports.generateQuestions = async (req, res) => {
 
   if (!Number.isInteger(questionCount) || questionCount < 1 || questionCount > 15) {
     return res.status(400).json({ success: false, message: 'Question count must be between 1 and 15' });
-  }
-
-  if (!DIFFICULTIES.has(difficulty)) {
-    return res.status(400).json({ success: false, message: 'Difficulty must be easy, medium, or hard' });
   }
 
   if (!process.env.OPENAI_API_KEY) {
@@ -480,7 +529,7 @@ exports.generateQuestions = async (req, res) => {
             content: [
               {
                 type: 'input_text',
-                text: 'You generate clean JSON question drafts for a form builder. Return only schema-compliant JSON.',
+                text: 'You generate JSON question drafts for a form builder. Output only valid JSON matching the schema.',
               },
             ],
           },
@@ -489,7 +538,7 @@ exports.generateQuestions = async (req, res) => {
             content: [
               {
                 type: 'input_text',
-                text: buildPrompt({ topic, audience, goal, formType, questionCount, difficulty }),
+                text: buildPrompt({ aiPrompt: normalizedPrompt, formType, questionCount, difficulty }),
               },
             ],
           },
@@ -515,7 +564,11 @@ exports.generateQuestions = async (req, res) => {
       return res.status(502).json({ success: false, message: 'AI did not return any question data' });
     }
 
-    const parsedOutput = JSON.parse(outputText);
+    const parsedOutput = safeParseJsonObject(outputText);
+    if (!parsedOutput) {
+      return res.status(502).json({ success: false, message: 'AI returned unreadable JSON for question generation' });
+    }
+
     const questions = validateAndNormalizeQuestions(formType, parsedOutput.questions, questionCount);
 
     return res.json({

@@ -23,11 +23,9 @@ const newQuestion = (type = 'multiple_choice') => ({
 });
 
 const defaultAiDraft = (type) => ({
-  topic: '',
-  audience: '',
-  goal: '',
-  questionCount: type === 'quiz' ? 5 : 4,
-  difficulty: 'medium',
+  aiPrompt: type === 'quiz'
+    ? 'Create 5 easy Java OOP quiz questions for college beginners.'
+    : 'Generate a customer feedback survey for a restaurant with rating and short-answer questions.',
 });
 
 const normalizeGeneratedQuestion = (question, formType, order) => {
@@ -43,7 +41,7 @@ const normalizeGeneratedQuestion = (question, formType, order) => {
     id: uuidv4(),
     order,
     type: questionType,
-    question: String(question.question || '').trim(),
+    question: String(question.questionText || question.question || question.text || '').trim(),
     description: String(question.description || '').trim(),
     required: question.required !== false,
     options: questionType === 'true_false'
@@ -121,6 +119,9 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
   const accent = 'var(--primary)';
   const lightBg = 'var(--brand-gradient-soft)';
   const label = isQuiz ? '🧠 Quiz' : '📋 Survey';
+  const aiPromptExample = isQuiz
+    ? 'Create 10 medium multiple-choice quiz questions about Indian geography for 8th grade students.'
+    : 'Generate a customer feedback survey for a restaurant with rating and short-answer questions.';
 
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
@@ -181,17 +182,16 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
   const moveQ = (i, dir) => setForm(f => { const qs = [...f.questions]; const to = i+dir; if(to<0||to>=qs.length) return f; [qs[i],qs[to]]=[qs[to],qs[i]]; return {...f, questions: qs}; });
 
   const handleGenerateQuestions = async () => {
-    if (!aiDraft.topic.trim()) {
-      toast.error('Topic is required');
+    if (!aiDraft.aiPrompt.trim()) {
+      toast.error('AI prompt is required');
       return;
     }
 
     setAiLoading(true);
     try {
       const payload = {
-        ...aiDraft,
+        aiPrompt: aiDraft.aiPrompt,
         formType: type,
-        questionCount: Number(aiDraft.questionCount),
       };
 
       const { data } = await api.post('/api/ai/generate-questions', payload);
@@ -304,7 +304,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
                   <div>
                     <h3 style={{ fontSize:16, fontWeight:700, marginBottom:6 }}>AI Question Generator</h3>
                     <p style={{ fontSize:13, color:'var(--text-secondary)', margin:0 }}>
-                      Describe the topic and goal, then review the generated questions in the editor before saving.
+                      Describe what you want in one prompt, then review the generated questions in the editor before saving.
                     </p>
                   </div>
                   <button onClick={handleGenerateQuestions} disabled={aiLoading} className="btn btn-secondary btn-sm">
@@ -312,63 +312,22 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
                   </button>
                 </div>
 
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
-                  <div className="form-group">
-                    <label className="form-label">Topic</label>
-                    <input
-                      value={aiDraft.topic}
-                      onChange={e => setAiDraft(current => ({ ...current, topic: e.target.value }))}
-                      className="form-input"
-                      placeholder={isQuiz ? 'e.g. Algebra basics' : 'e.g. Customer onboarding feedback'}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Audience</label>
-                    <input
-                      value={aiDraft.audience}
-                      onChange={e => setAiDraft(current => ({ ...current, audience: e.target.value }))}
-                      className="form-input"
-                      placeholder={isQuiz ? 'e.g. 8th grade students' : 'e.g. New SaaS customers'}
-                    />
-                  </div>
-                  <div className="form-group" style={{ gridColumn:'1/-1' }}>
-                    <label className="form-label">Goal</label>
-                    <textarea
-                      value={aiDraft.goal}
-                      onChange={e => setAiDraft(current => ({ ...current, goal: e.target.value }))}
-                      className="form-input form-textarea"
-                      rows={2}
-                      placeholder={isQuiz ? 'What should the quiz test?' : 'What do you want to learn from respondents?'}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Number of Questions</label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={15}
-                      value={aiDraft.questionCount}
-                      onChange={e => setAiDraft(current => ({ ...current, questionCount: e.target.value }))}
-                      className="form-input"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Difficulty</label>
-                    <select
-                      value={aiDraft.difficulty}
-                      onChange={e => setAiDraft(current => ({ ...current, difficulty: e.target.value }))}
-                      className="form-input form-select"
-                    >
-                      {['easy', 'medium', 'hard'].map(level => (
-                        <option key={level} value={level}>
-                          {level.charAt(0).toUpperCase() + level.slice(1)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                <div className="form-group">
+                  <label className="form-label">AI Prompt</label>
+                  <textarea
+                    value={aiDraft.aiPrompt}
+                    onChange={e => setAiDraft(current => ({ ...current, aiPrompt: e.target.value }))}
+                    className="form-input form-textarea"
+                    rows={5}
+                    placeholder={aiPromptExample}
+                    style={{ fontSize:14, lineHeight:1.6 }}
+                  />
                 </div>
 
                 <p style={{ fontSize:12, color:'var(--text-muted)', margin:'12px 0 0' }}>
+                  Example: {aiPromptExample}
+                </p>
+                <p style={{ fontSize:12, color:'var(--text-muted)', margin:'8px 0 0' }}>
                   AI questions are added to this draft only. You can edit or delete them before saving or publishing.
                 </p>
               </div>
