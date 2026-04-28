@@ -67,6 +67,7 @@ export default function FormCard({ form, onDelete, onDuplicate, onPublish, view 
         padding: 0,
         overflow: 'hidden',
         transition: 'transform 0.2s, box-shadow 0.2s, border-color 0.2s',
+        color: 'var(--text-primary)'
       }}
         onMouseOver={e => {
           e.currentTarget.style.transform = 'translateY(-1px)';
@@ -115,6 +116,7 @@ export default function FormCard({ form, onDelete, onDuplicate, onPublish, view 
               <h3 style={{
                 fontSize: 16,
                 fontWeight: 700,
+                color: 'var(--text-primary)',
                 marginBottom: 6,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',

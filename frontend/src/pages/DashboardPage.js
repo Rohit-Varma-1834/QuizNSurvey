@@ -363,6 +363,7 @@ function DashboardListCard({ title, subtitle, items, emptyMessage, onOpen, actio
             <button
               key={form._id}
               onClick={() => onOpen(form._id)}
+              className="dashboard-list-item"
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -374,7 +375,8 @@ function DashboardListCard({ title, subtitle, items, emptyMessage, onOpen, actio
                 background: 'var(--bg-card)',
                 cursor: 'pointer',
                 textAlign: 'left',
-                transition: 'border-color var(--transition), background var(--transition)'
+                transition: 'border-color var(--transition), background var(--transition)',
+                color: 'var(--text-primary)'
               }}
               onMouseOver={e => {
                 e.currentTarget.style.borderColor = 'var(--border-strong)';
@@ -393,7 +395,7 @@ function DashboardListCard({ title, subtitle, items, emptyMessage, onOpen, actio
                   </span>
                   <span className="badge badge-secondary" style={{ fontSize: 11 }}>{form.status}</span>
                 </div>
-                <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {form.title}
                 </p>
                 <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0 }}>

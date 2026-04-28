@@ -373,7 +373,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       <Navbar />
 
-      <div style={{ borderBottom: '1px solid var(--border)', background: 'rgba(var(--bg-card-rgb), 0.92)', backdropFilter: 'blur(10px)', position: 'sticky', top: 60, zIndex: 50 }}>
+      <div className="builder-sticky-header" style={{ borderBottom: '1px solid var(--border)', background: 'rgba(var(--bg-card-rgb), 0.92)', backdropFilter: 'blur(10px)', position: 'sticky', top: 60, zIndex: 50 }}>
         <div className="page-container" style={{ paddingTop: 14, paddingBottom: 14 }}>
           <div className="builder-header-row" style={{ display: 'flex', alignItems: 'center', gap: 12, minHeight: 56, flexWrap: 'wrap' }}>
             <button onClick={() => navigate('/dashboard')} className="btn btn-ghost btn-sm" style={{ padding: '6px 8px' }}>
@@ -566,6 +566,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
                 {questionTypes.map(qt => (
                   <button
                     key={qt.type}
+                    className="builder-sidebar-action"
                     onClick={() => addQ(qt.type)}
                     style={{
                       display: 'flex',
@@ -578,7 +579,8 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
                       cursor: 'pointer',
                       textAlign: 'left',
                       transition: 'all 0.15s',
-                      width: '100%'
+                      width: '100%',
+                      color: 'var(--text-primary)'
                     }}
                     onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.background = 'var(--bg-secondary)'; }}
                     onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--bg-card)'; }}
