@@ -157,8 +157,8 @@ const buildAnalyticsPayload = (form, responses) => {
   return {
     form: { _id: form._id, title: form.title, type: form.type, status: form.status, createdAt: form.createdAt },
     totalResponses,
-    avgScore: avgScore ? Math.round(avgScore * 10) / 10 : null,
-    avgPercentage: avgPercentage ? Math.round(avgPercentage) : null,
+    avgScore: avgScore !== null ? Math.round(avgScore * 10) / 10 : null,
+    avgPercentage: avgPercentage !== null ? Math.round(avgPercentage) : null,
     passRate,
     passFailCounts,
     avgTime,
@@ -167,6 +167,7 @@ const buildAnalyticsPayload = (form, responses) => {
     scoreDistribution,
     recentResponses: responses.slice(0, 10).map(r => ({
       _id: r._id,
+      isAnonymous: r.isAnonymous,
       respondentName: r.respondentName,
       score: r.score,
       percentage: r.percentage,

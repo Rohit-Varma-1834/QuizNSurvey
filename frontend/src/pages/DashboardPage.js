@@ -40,6 +40,7 @@ export default function DashboardPage() {
       if (typeFilter)   params.type   = typeFilter;
       if (statusFilter) params.status = statusFilter;
       if (sort)         params.sort   = sort;
+      params.limit = 100;
       const res = await api.get('/api/forms', { params });
       setForms(res.data.forms);
     } catch {
@@ -173,7 +174,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="section-card" style={{ marginBottom: 24, padding: '18px 18px 20px' }}>
-          <div className="toolbar-row" style={{ marginBottom: 18, background: 'var(--bg-secondary)' }}>
+          <div className="toolbar-row dashboard-toolbar" style={{ marginBottom: 18, background: 'var(--bg-secondary)' }}>
           <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
             <HiOutlineSearch style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} size={16} />
             <input
@@ -205,7 +206,7 @@ export default function DashboardPage() {
             <option value="title">Title A–Z</option>
           </select>
 
-          <div style={{ display: 'flex', gap: 4, marginLeft: 'auto', padding: 4, borderRadius: 10, border: '1px solid var(--border)', background: 'var(--bg-card)' }}>
+          <div className="dashboard-toolbar-view" style={{ display: 'flex', gap: 4, marginLeft: 'auto', padding: 4, borderRadius: 10, border: '1px solid var(--border)', background: 'var(--bg-card)' }}>
             <button onClick={() => setView('grid')} className={`btn btn-sm ${view === 'grid' ? 'btn-primary' : 'btn-ghost'}`} style={{ padding: '7px 10px' }}>
               <HiOutlineViewGrid size={16} />
             </button>

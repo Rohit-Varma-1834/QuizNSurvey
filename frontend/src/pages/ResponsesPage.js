@@ -135,7 +135,19 @@ export default function ResponsesPage() {
   const handleDelete = async () => {
     try {
       await api.delete(`/api/responses/${deleteId}`);
+      const deletingLastVisibleResponse = responses.length === 1 && page > 1;
+
       setResponses((current) => current.filter((response) => response._id !== deleteId));
+      setPagination((current) => ({
+        ...current,
+        total: Math.max((current.total || 1) - 1, 0),
+        pages: Math.max(Math.ceil(Math.max((current.total || 1) - 1, 0) / 15), 1)
+      }));
+
+      if (deletingLastVisibleResponse) {
+        setPage((current) => Math.max(current - 1, 1));
+      }
+
       toast.success('Response deleted');
     } catch {
       toast.error('Failed to delete');

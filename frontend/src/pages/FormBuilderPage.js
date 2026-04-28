@@ -12,6 +12,8 @@ import {
 } from 'react-icons/hi';
 
 const COVER_COLORS = ['#0000FF', '#00FF00', '#00C8A7', '#6C63FF', '#FF6B6B', '#FF9F1C', '#0F172A', '#F43F5E'];
+const QUESTION_TYPES_WITH_OPTIONS = new Set(['multiple_choice', 'checkbox', 'dropdown']);
+const QUIZ_TYPES_WITH_CORRECT_ANSWER = new Set(['multiple_choice', 'checkbox', 'dropdown', 'true_false']);
 
 const newQuestion = (type = 'multiple_choice') => ({
   id: uuidv4(), type,
@@ -50,6 +52,85 @@ const normalizeGeneratedQuestion = (question, formType, order) => {
     correctAnswer: formType === 'quiz' ? question.correctAnswer ?? null : null,
     points: formType === 'quiz' ? Math.max(1, Number(question.points) || 1) : 1,
     ratingMax: questionType === 'rating' ? Math.max(3, Number(question.ratingMax) || 5) : 5,
+  };
+};
+
+const trimText = (value) => (typeof value === 'string' ? value.trim() : '');
+
+const validateFormDraft = (form, formType) => {
+  const nextErrors = {};
+  const messages = [];
+
+  if (!trimText(form.title)) {
+    nextErrors.title = 'Title is required';
+    messages.push('Add a title before saving this form.');
+  }
+
+  if (!Array.isArray(form.questions) || form.questions.length === 0) {
+    nextErrors.questions = 'Add at least one question';
+    messages.push('Add at least one question before saving this form.');
+  }
+
+  (form.questions || []).forEach((question, index) => {
+    const label = `Question ${index + 1}`;
+    const questionMessages = [];
+    const options = Array.isArray(question.options) ? question.options.map((option) => trimText(option)) : [];
+    const validOptions = options.filter(Boolean);
+    const hasEmptyOptions = options.some((option) => !option);
+    const ratingMax = Number(question.ratingMax);
+
+    if (!trimText(question.question)) {
+      questionMessages.push(`${label} needs question text.`);
+    }
+
+    if (QUESTION_TYPES_WITH_OPTIONS.has(question.type)) {
+      if (hasEmptyOptions) {
+        questionMessages.push(`${label} has an empty option. Remove blank options before saving.`);
+      } else if (validOptions.length < 2) {
+        questionMessages.push(`${label} needs at least two options.`);
+      }
+    }
+
+    if (question.type === 'rating' && (!Number.isInteger(ratingMax) || ratingMax < 3 || ratingMax > 10)) {
+      questionMessages.push(`${label} must use a rating scale between 3 and 10.`);
+    }
+
+    if (formType === 'quiz' && QUIZ_TYPES_WITH_CORRECT_ANSWER.has(question.type)) {
+      if (question.type === 'checkbox') {
+        const correctAnswers = Array.isArray(question.correctAnswer)
+          ? question.correctAnswer.map((answer) => trimText(answer)).filter(Boolean)
+          : [];
+
+        if (!correctAnswers.length) {
+          questionMessages.push(`${label} needs at least one correct answer.`);
+        } else if (correctAnswers.some((answer) => !validOptions.includes(answer))) {
+          questionMessages.push(`${label} has a correct answer that does not match its options.`);
+        }
+      } else {
+        const correctAnswer = trimText(question.correctAnswer);
+        const allowedAnswers = question.type === 'true_false' ? ['True', 'False'] : validOptions;
+
+        if (!correctAnswer) {
+          questionMessages.push(`${label} needs a correct answer.`);
+        } else if (!allowedAnswers.includes(correctAnswer)) {
+          questionMessages.push(`${label} has a correct answer that does not match its options.`);
+        }
+      }
+    }
+
+    if (questionMessages.length) {
+      nextErrors[`q_${index}`] = questionMessages[0];
+      if (!nextErrors.questions) {
+        nextErrors.questions = 'Fix the highlighted questions before saving.';
+      }
+      messages.push(questionMessages[0]);
+    }
+  });
+
+  return {
+    isValid: Object.keys(nextErrors).length === 0,
+    errors: nextErrors,
+    firstMessage: messages[0] || 'Please fix the highlighted errors.',
   };
 };
 
@@ -130,11 +211,24 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
   }, [type]);
 
   const validate = () => {
-    const e = {};
-    if (!form.title.trim()) e.title = 'Title is required';
-    if (form.questions.length === 0) e.questions = 'Add at least one question';
-    setErrors(e);
-    return Object.keys(e).length === 0;
+    const result = validateFormDraft(form, type);
+    setErrors(result.errors);
+    return result;
+  };
+
+  const clearQuestionErrors = (questionKeys = []) => {
+    setErrors((current) => {
+      const next = { ...current };
+      delete next.questions;
+      if (questionKeys.length) {
+        questionKeys.forEach((key) => delete next[key]);
+      } else {
+        Object.keys(next).forEach((key) => {
+          if (key.startsWith('q_')) delete next[key];
+        });
+      }
+      return next;
+    });
   };
 
   const buildPayload = () => ({
@@ -149,7 +243,8 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
   });
 
   const handleSave = async () => {
-    if (!validate()) { toast.error('Please fix the errors'); return; }
+    const validation = validate();
+    if (!validation.isValid) { toast.error(validation.firstMessage); return; }
     setSaving(true);
     try {
       if (isEdit) {
@@ -169,7 +264,8 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
 
   const handlePublish = async () => {
     if (!isEdit) { toast.error('Save first'); return; }
-    if (!validate()) { toast.error('Fix errors first'); return; }
+    const validation = validate();
+    if (!validation.isValid) { toast.error(validation.firstMessage); return; }
     setPublishing(true);
     try {
       const { data } = await api.post(`/api/forms/${formId}/publish`);
@@ -182,29 +278,44 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
     }
   };
 
-  const addQ = (qType) => setForm(f => {
-    const q = newQuestion(qType);
-    q.order = f.questions.length;
-    return { ...f, questions: [...f.questions, q] };
-  });
-  const updateQ = (i, u) => setForm(f => {
-    const qs = [...f.questions];
-    qs[i] = u;
-    return { ...f, questions: qs };
-  });
-  const deleteQ = (i) => setForm(f => ({ ...f, questions: f.questions.filter((_, idx) => idx !== i) }));
-  const dupQ = (i) => setForm(f => {
-    const qs = [...f.questions];
-    qs.splice(i + 1, 0, { ...qs[i], id: uuidv4() });
-    return { ...f, questions: qs };
-  });
-  const moveQ = (i, dir) => setForm(f => {
-    const qs = [...f.questions];
-    const to = i + dir;
-    if (to < 0 || to >= qs.length) return f;
-    [qs[i], qs[to]] = [qs[to], qs[i]];
-    return { ...f, questions: qs };
-  });
+  const addQ = (qType) => {
+    clearQuestionErrors();
+    setForm(f => {
+      const q = newQuestion(qType);
+      q.order = f.questions.length;
+      return { ...f, questions: [...f.questions, q] };
+    });
+  };
+  const updateQ = (i, u) => {
+    clearQuestionErrors([`q_${i}`]);
+    setForm(f => {
+      const qs = [...f.questions];
+      qs[i] = u;
+      return { ...f, questions: qs };
+    });
+  };
+  const deleteQ = (i) => {
+    clearQuestionErrors();
+    setForm(f => ({ ...f, questions: f.questions.filter((_, idx) => idx !== i) }));
+  };
+  const dupQ = (i) => {
+    clearQuestionErrors();
+    setForm(f => {
+      const qs = [...f.questions];
+      qs.splice(i + 1, 0, { ...qs[i], id: uuidv4() });
+      return { ...f, questions: qs };
+    });
+  };
+  const moveQ = (i, dir) => {
+    clearQuestionErrors();
+    setForm(f => {
+      const qs = [...f.questions];
+      const to = i + dir;
+      if (to < 0 || to >= qs.length) return f;
+      [qs[i], qs[to]] = [qs[to], qs[i]];
+      return { ...f, questions: qs };
+    });
+  };
 
   const handleGenerateQuestions = async () => {
     if (!aiDraft.aiPrompt.trim()) {
@@ -264,7 +375,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
 
       <div style={{ borderBottom: '1px solid var(--border)', background: 'rgba(var(--bg-card-rgb), 0.92)', backdropFilter: 'blur(10px)', position: 'sticky', top: 60, zIndex: 50 }}>
         <div className="page-container" style={{ paddingTop: 14, paddingBottom: 14 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, minHeight: 56, flexWrap: 'wrap' }}>
+          <div className="builder-header-row" style={{ display: 'flex', alignItems: 'center', gap: 12, minHeight: 56, flexWrap: 'wrap' }}>
             <button onClick={() => navigate('/dashboard')} className="btn btn-ghost btn-sm" style={{ padding: '6px 8px' }}>
               <HiOutlineArrowLeft size={16} />
             </button>
@@ -296,17 +407,19 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
             <span className={`badge ${form.status === 'published' ? 'badge-success' : 'badge-secondary'}`} style={{ textTransform: 'uppercase' }}>
               {form.status || 'draft'}
             </span>
-            <button onClick={handleSave} disabled={saving} className="btn btn-secondary">
-              <HiOutlineSave size={15} /> {saving ? 'Saving…' : 'Save Draft'}
-            </button>
-            <button
-              onClick={handlePublish}
-              disabled={publishing || !isEdit}
-              className="btn btn-primary"
-              title={!isEdit ? 'Save the form first to publish it' : undefined}
-            >
-              <HiOutlineGlobe size={15} /> {publishing ? 'Working…' : form.status === 'published' ? 'Unpublish' : 'Publish'}
-            </button>
+            <div className="builder-header-actions" style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginLeft: 'auto' }}>
+              <button onClick={handleSave} disabled={saving} className="btn btn-secondary">
+                <HiOutlineSave size={15} /> {saving ? 'Saving…' : 'Save Draft'}
+              </button>
+              <button
+                onClick={handlePublish}
+                disabled={publishing || !isEdit}
+                className="btn btn-primary"
+                title={!isEdit ? 'Save the form first to publish it' : undefined}
+              >
+                <HiOutlineGlobe size={15} /> {publishing ? 'Working…' : form.status === 'published' ? 'Unpublish' : 'Publish'}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -543,8 +656,13 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
                       label={opt.label}
                       checked={!!form.settings[opt.key]}
                       onChange={(checked) => setForm(f => ({ ...f, settings: { ...f.settings, [opt.key]: checked } }))}
-                    />
-                  ))}
+                      />
+                    ))}
+                  {!!form.settings.allowAnonymous && form.settings.allowMultipleResponses === false && (
+                    <div style={{ padding: '12px 14px', borderRadius: 10, border: '1px solid color-mix(in srgb, var(--warning) 24%, var(--bg-secondary) 76%)', background: 'var(--warning-soft)', color: 'var(--text-secondary)', fontSize: 12, lineHeight: 1.6 }}>
+                      Anonymous forms cannot reliably prevent multiple submissions from the same respondent.
+                    </div>
+                  )}
                 </div>
               )}
 

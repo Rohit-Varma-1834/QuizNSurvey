@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
 
 function AuthLayout({ children, title, subtitle, footer }) {
   return (
@@ -77,8 +78,8 @@ export function LoginPage() {
           <label className="form-label">Password</label>
           <div style={{ position: 'relative' }}>
             <input className="form-input" type={showPw ? 'text' : 'password'} placeholder="••••••••" value={form.password} onChange={e => setForm(p => ({ ...p, password: e.target.value }))} required style={{ paddingRight: 44 }} />
-            <button type="button" onClick={() => setShowPw(p => !p)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 14 }}>
-              {showPw ? '🙈' : '👁'}
+            <button type="button" onClick={() => setShowPw(p => !p)} aria-label={showPw ? 'Hide password' : 'Show password'} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+              {showPw ? <HiOutlineEyeOff size={18} /> : <HiOutlineEye size={18} />}
             </button>
           </div>
         </div>
@@ -117,7 +118,7 @@ export function RegisterPage() {
   return (
     <AuthLayout
       title="Create your account"
-      subtitle="Join thousands of creators on QuiznSurvey"
+      subtitle="Create your QuiznSurvey account"
       footer={<>Already have an account? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>Sign in</Link></>}
     >
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

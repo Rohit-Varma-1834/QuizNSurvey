@@ -36,7 +36,7 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Public */}
-      <Route path="/" element={<LandingPage />} />
+      <Route path="/" element={<GuestRoute><LandingPage /></GuestRoute>} />
       <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
       <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
       <Route path="/f/:publicId" element={<FormResponsePage />} />

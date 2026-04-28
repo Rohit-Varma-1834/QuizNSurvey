@@ -12,15 +12,58 @@ const connectDB = require('./config/db');
 connectDB();
 
 const app = express();
+const isProduction = process.env.NODE_ENV === 'production';
 
-// ── 1. CORS first — must be before everything else ──────────────────────────
-app.use(cors({
-  origin: true,
+const normalizeOrigin = (origin = '') => origin.trim().replace(/\/$/, '');
+
+const configuredOrigins = [
+  process.env.ALLOWED_ORIGINS,
+  process.env.FRONTEND_URL,
+  process.env.CLIENT_URL,
+].filter(Boolean)
+  .flatMap((value) => value.split(','))
+  .map(normalizeOrigin)
+  .filter(Boolean);
+
+const defaultDevOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+];
+
+const allowedOrigins = new Set(
+  isProduction
+    ? configuredOrigins
+    : [...configuredOrigins, ...defaultDevOrigins]
+);
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+
+    const normalizedOrigin = normalizeOrigin(origin);
+    if (allowedOrigins.has(normalizedOrigin)) {
+      return callback(null, true);
+    }
+
+    if (!isProduction && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(normalizedOrigin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('CORS origin not allowed'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-}));
-app.options('*', cors()); // Handle preflight requests
+};
+
+// ── 1. CORS first — must be before everything else ──────────────────────────
+if (isProduction && allowedOrigins.size === 0) {
+  console.warn('⚠️ No CORS origins configured for production. Set ALLOWED_ORIGINS or FRONTEND_URL.');
+}
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight requests
 
 // ── 2. Security headers ──────────────────────────────────────────────────────
 app.use(helmet({

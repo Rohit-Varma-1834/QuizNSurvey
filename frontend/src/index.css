@@ -196,6 +196,40 @@ input, textarea, select { font-family: inherit; }
   gap: 16px;
 }
 
+.builder-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dashboard-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dashboard-toolbar-view {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.question-editor-actions {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.question-editor-action-btn {
+  min-width: 34px;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .responses-filter-grid {
   display: grid;
   align-items: center;
@@ -231,6 +265,78 @@ input, textarea, select { font-family: inherit; }
   justify-content: space-between;
   align-items: center;
   gap: 16px;
+  flex-wrap: wrap;
+}
+
+.navbar-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.mobile-nav-toggle {
+  display: none;
+}
+
+.mobile-nav-panel {
+  display: none;
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--text-primary);
+  transition: background var(--transition), color var(--transition);
+}
+
+.mobile-nav-link:hover {
+  background: var(--bg-secondary);
+}
+
+.landing-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.landing-preview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.landing-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.landing-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.landing-use-case-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.landing-footer-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
   flex-wrap: wrap;
 }
 
@@ -411,14 +517,71 @@ input, textarea, select { font-family: inherit; }
   .toolbar-row { padding: 12px; }
   .builder-workspace { grid-template-columns: 1fr; }
   .builder-sidebar { position: static; }
+  .builder-header-actions {
+    width: 100%;
+    justify-content: stretch;
+    margin-left: 0 !important;
+  }
+  .builder-header-actions .btn {
+    flex: 1 1 180px;
+  }
+  .dashboard-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .dashboard-toolbar .form-input,
+  .dashboard-toolbar .form-select {
+    width: 100% !important;
+  }
+  .dashboard-toolbar-view {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .question-editor-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .question-editor-action-btn {
+    min-width: 38px;
+    min-height: 38px;
+  }
   .responses-filter-grid,
   .responses-filter-grid-quiz,
   .responses-filter-grid-survey { grid-template-columns: 1fr; }
   .public-form-info-grid { grid-template-columns: 1fr; }
   .public-form-footer { flex-direction: column; align-items: stretch; }
+  .desktop-nav,
+  .desktop-auth-actions { display: none !important; }
+  .mobile-nav-toggle { display: inline-flex; }
+  .mobile-nav-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 1200px;
+    margin: 0 auto 12px;
+    padding: 0 0 12px;
+  }
+  .landing-hero-grid,
+  .landing-preview-grid,
+  .landing-grid-3,
+  .landing-grid-4,
+  .landing-use-case-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .builder-header-row {
+    align-items: flex-start;
+  }
+  .builder-header-actions .btn {
+    width: 100%;
+  }
 }
 @media (max-width: 1024px) {
   .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .responses-filter-grid-quiz,
   .responses-filter-grid-survey { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .landing-grid-4,
+  .landing-use-case-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .landing-hero-grid,
+  .landing-preview-grid { grid-template-columns: 1fr; }
 }

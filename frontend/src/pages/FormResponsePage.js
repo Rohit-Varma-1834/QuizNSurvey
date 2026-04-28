@@ -423,7 +423,7 @@ export default function FormResponsePage() {
             <h2 style={{ fontSize: 18, marginBottom: 4 }}>About your submission</h2>
             <p style={{ color: 'var(--text-secondary)' }}>
               {isAnonymousMode
-                ? 'This form accepts anonymous responses. Your name and email will not be stored.'
+                ? 'Review the privacy details for this response before continuing.'
                 : 'Please provide your details before submitting your response.'}
             </p>
           </div>
@@ -438,7 +438,12 @@ export default function FormResponsePage() {
                 color: 'var(--text-secondary)'
               }}
             >
-              This form accepts anonymous responses. Your name and email will not be stored.
+              <p>This form accepts anonymous responses. Your name and email will not be stored.</p>
+              {form.settings?.allowMultipleResponses === false && (
+                <p style={{ marginTop: 8, fontSize: 12, color: 'var(--text-muted)' }}>
+                  Anonymous forms cannot reliably prevent multiple submissions from the same respondent.
+                </p>
+              )}
             </div>
           ) : (
             <div className="public-form-info-grid">

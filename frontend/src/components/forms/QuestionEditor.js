@@ -29,9 +29,17 @@ export default function QuestionEditor({ question, index, onChange, onDelete, on
   };
 
   const removeOption = (i) => {
+    const removedOption = question.options[i];
     const opts = question.options.filter((_, idx) => idx !== i);
-    update('options', opts);
-    if (question.correctAnswer === question.options[i]) update('correctAnswer', null);
+    let nextCorrectAnswer = question.correctAnswer;
+
+    if (Array.isArray(question.correctAnswer)) {
+      nextCorrectAnswer = question.correctAnswer.filter((value) => value !== removedOption);
+    } else if (question.correctAnswer === removedOption) {
+      nextCorrectAnswer = null;
+    }
+
+    onChange({ ...question, options: opts, correctAnswer: nextCorrectAnswer });
   };
 
   const renderOptionsSection = () => {
@@ -199,20 +207,20 @@ export default function QuestionEditor({ question, index, onChange, onDelete, on
           ))}
         </select>
 
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-          <button onClick={() => onMove(index, -1)} disabled={index === 0} className="btn btn-ghost btn-sm" style={{ padding: 5 }}>
+        <div className="question-editor-actions" style={{ marginLeft: 'auto', display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+          <button onClick={() => onMove(index, -1)} disabled={index === 0} className="btn btn-ghost btn-sm question-editor-action-btn" style={{ padding: 5 }}>
             <HiOutlineChevronUp size={14} />
           </button>
-          <button onClick={() => onMove(index, 1)} disabled={index === total - 1} className="btn btn-ghost btn-sm" style={{ padding: 5 }}>
+          <button onClick={() => onMove(index, 1)} disabled={index === total - 1} className="btn btn-ghost btn-sm question-editor-action-btn" style={{ padding: 5 }}>
             <HiOutlineChevronDown size={14} />
           </button>
-          <button onClick={() => onDuplicate(index)} className="btn btn-ghost btn-sm" style={{ padding: 5 }}>
+          <button onClick={() => onDuplicate(index)} className="btn btn-ghost btn-sm question-editor-action-btn" style={{ padding: 5 }}>
             <HiOutlineDuplicate size={14} />
           </button>
-          <button onClick={() => onDelete(index)} className="btn btn-ghost btn-sm" style={{ padding: 5, color: 'var(--danger)' }}>
+          <button onClick={() => onDelete(index)} className="btn btn-ghost btn-sm question-editor-action-btn" style={{ padding: 5, color: 'var(--danger)' }}>
             <HiOutlineTrash size={15} />
           </button>
-          <button onClick={() => setCollapsed(p => !p)} className="btn btn-ghost btn-sm" style={{ padding: 5 }}>
+          <button onClick={() => setCollapsed(p => !p)} className="btn btn-ghost btn-sm question-editor-action-btn" style={{ padding: 5 }}>
             {collapsed ? <HiOutlineChevronDown size={14} /> : <HiOutlineChevronUp size={14} />}
           </button>
         </div>

@@ -8,30 +8,45 @@ import toast from 'react-hot-toast';
 export default function ShareModal({ isOpen, onClose, form }) {
   const [copied, setCopied] = useState(false);
 
+  if (!form) return null;
+
   const publicUrl = `${window.location.origin}/f/${form.publicId}`;
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(publicUrl);
-    setCopied(true);
-    toast.success('Link copied!');
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = async () => {
+    try {
+      if (!navigator.clipboard?.writeText) {
+        throw new Error('Clipboard is not available');
+      }
+
+      await navigator.clipboard.writeText(publicUrl);
+      setCopied(true);
+      toast.success('Link copied!');
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      toast.error('Unable to copy the share link');
+    }
   };
 
   const handleDownloadQR = () => {
-    const svg = document.getElementById('qr-svg');
-    if (!svg) return;
-    const svgData = new XMLSerializer().serializeToString(svg);
-    const blob = new Blob([svgData], { type: 'image/svg+xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${form.title}-qr.svg`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success('QR code downloaded!');
-  };
+    try {
+      const svg = document.getElementById('qr-svg');
+      if (!svg) {
+        throw new Error('QR code is not available');
+      }
 
-  if (!form) return null;
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const blob = new Blob([svgData], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${form.title}-qr.svg`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success('QR code downloaded!');
+    } catch (error) {
+      toast.error('Unable to download the QR code');
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Share Form" size="sm">

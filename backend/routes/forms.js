@@ -20,7 +20,10 @@ router.post('/', [
   body('type').isIn(['quiz', 'survey']).withMessage('Type must be quiz or survey')
 ], createForm);
 
-router.put('/:id', updateForm);
+router.put('/:id', [
+  body('title').optional().trim().notEmpty().withMessage('Title is required'),
+  body('type').optional().isIn(['quiz', 'survey']).withMessage('Type must be quiz or survey')
+], updateForm);
 router.delete('/:id', deleteForm);
 router.post('/:id/duplicate', duplicateForm);
 router.post('/:id/publish', publishForm);

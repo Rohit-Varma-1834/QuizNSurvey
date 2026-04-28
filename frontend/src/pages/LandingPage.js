@@ -3,42 +3,85 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 
-const OVERVIEW_ITEMS = [
+const coreFeatures = [
   {
-    title: 'AI question generation',
-    description: 'Generate quiz or survey questions from a prompt, then review and edit them before publishing.',
+    title: 'Form Builder',
+    description: 'Create quizzes and surveys with flexible question types and a clean editing flow.'
   },
   {
-    title: 'Public links and QR sharing',
-    description: 'Publish a form once and collect responses from a public link or QR code without requiring creator login.',
+    title: 'Public Links & QR Codes',
+    description: 'Share forms using public links or QR codes so respondents can submit without logging in.'
   },
   {
-    title: 'Analytics and exports',
-    description: 'Track responses, review charts, export CSV data, and download PDF analytics reports.',
+    title: 'Analytics Dashboard',
+    description: 'Review responses, scores, charts, question-level performance, and response trends.'
   },
   {
-    title: 'Privacy and feedback tools',
-    description: 'Support anonymous survey responses, AI summaries, and sentiment analysis for text feedback.',
-  },
+    title: 'CSV & PDF Export',
+    description: 'Download response data and summary reports for records, presentations, or sharing.'
+  }
 ];
 
-const FEATURE_CARDS = [
+const aiFeatures = [
   {
-    title: 'Create with AI',
-    description: 'Start from a prompt and turn it into editable questions inside the builder.',
+    title: 'AI Question Generator',
+    description: 'Generate editable quiz or survey questions from a simple prompt.'
   },
   {
-    title: 'Share publicly',
-    description: 'Use a public link or QR code so respondents can submit without extra friction.',
+    title: 'AI Response Summary',
+    description: 'Summarize collected responses into clear insights.'
   },
   {
-    title: 'Review insights',
-    description: 'See response trends, pass rates, question breakdowns, and AI-generated summaries.',
+    title: 'Sentiment Analysis',
+    description: 'Understand the overall tone of written feedback.'
+  }
+];
+
+const howItWorks = [
+  {
+    step: '1. Create',
+    description: 'Build manually or generate questions with AI.'
   },
   {
-    title: 'Export results',
-    description: 'Download CSV response data and PDF reports for analysis, presentation, or record keeping.',
+    step: '2. Share',
+    description: 'Publish your form and send a public link or QR code.'
   },
+  {
+    step: '3. Analyze',
+    description: 'Use dashboards, exports, summaries, and sentiment insights to understand results.'
+  }
+];
+
+const useCases = [
+  'Classroom quizzes',
+  'Student projects',
+  'Customer feedback',
+  'Team surveys',
+  'Research surveys',
+  'Event feedback'
+];
+
+const trustItems = [
+  'Public forms work without respondent login',
+  'Creator dashboard is protected',
+  'Supports anonymous response collection',
+  'CSV and PDF exports included',
+  'AI features are assistive and editable'
+];
+
+const previewColumns = [
+  {
+    title: 'Build',
+    description: 'Create a quiz or survey, edit questions, and generate drafts with AI.'
+  },
+  {
+    title: 'Share',
+    description: 'Publish once, then send a public link or QR code for frictionless responses.'
+  },
+  {
+    title: 'Analyze',
+    description: 'Review submissions, export data, and use summaries or sentiment tools to understand results.'
+  }
 ];
 
 export default function LandingPage() {
@@ -48,228 +91,178 @@ export default function LandingPage() {
 
       <main>
         <section style={{ padding: '72px 0 56px' }}>
-          <div className="page-container" style={{ display: 'grid', gap: 40 }}>
-            <div style={{ maxWidth: 760 }}>
-              <p style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                padding: '6px 12px',
-                borderRadius: '9999px',
-                background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                color: 'var(--text-secondary)',
-                fontSize: 13,
-                fontWeight: 600,
-                marginBottom: 18
-              }}>
-                QuiznSurvey
+          <div className="page-container landing-hero-grid">
+            <div style={{ maxWidth: 720 }}>
+              <p
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-muted)',
+                  marginBottom: 14
+                }}
+              >
+                AI-powered form creation and analytics
               </p>
 
-              <h1 style={{ maxWidth: 720, marginBottom: 16 }}>
-                Create quizzes and surveys with AI-powered insights.
+              <h1 style={{ maxWidth: 760, marginBottom: 16 }}>
+                Create quizzes and surveys with built-in AI analysis.
               </h1>
 
-              <p style={{
-                maxWidth: 720,
-                fontSize: 16,
-                lineHeight: 1.7,
-                color: 'var(--text-secondary)',
-                marginBottom: 28
-              }}>
-                Build forms, collect public responses, and analyze results with summaries,
-                sentiment, exports, and dashboards.
+              <p
+                style={{
+                  maxWidth: 720,
+                  fontSize: 16,
+                  lineHeight: 1.75,
+                  color: 'var(--text-secondary)',
+                  marginBottom: 28
+                }}
+              >
+                Build forms, share them publicly, collect responses, and review results with dashboards,
+                exports, summaries, and sentiment insights.
               </p>
 
               <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}>
                 <Link to="/register" className="btn btn-primary btn-lg">
                   Start Building
                 </Link>
-                <a
-                  href="#product-overview"
-                  className="btn btn-ghost btn-lg"
-                  style={{ paddingLeft: 0, paddingRight: 0 }}
-                >
-                  View Product Overview
+                <a href="#product-preview" className="btn btn-secondary btn-lg">
+                  View Demo
                 </a>
               </div>
             </div>
 
-            <div className="section-card" style={{ padding: 0, overflow: 'hidden' }}>
-              <div style={{
-                padding: '14px 18px',
-                borderBottom: '1px solid var(--border)',
-                background: 'var(--bg-card)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 12,
-                flexWrap: 'wrap'
-              }}>
-                <div>
-                  <h2 style={{ fontSize: 18, marginBottom: 4 }}>Product dashboard preview</h2>
-                  <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-                    Form management, responses, analytics, exports, and AI tools in one workspace.
-                  </p>
-                </div>
-                <span className="badge badge-secondary">Preview</span>
-              </div>
+            <div className="section-card" style={{ padding: '22px 24px' }}>
+              <p
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-muted)',
+                  marginBottom: 12
+                }}
+              >
+                Product highlights
+              </p>
 
-              <div style={{ padding: 24, background: 'var(--bg-secondary)' }}>
-                <div style={{
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 16,
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    padding: '12px 16px',
-                    borderBottom: '1px solid var(--border)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8
-                  }}>
-                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--border-strong)' }} />
-                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--border)' }} />
-                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--border)' }} />
-                    <div style={{
-                      marginLeft: 8,
-                      padding: '4px 10px',
-                      borderRadius: 9999,
-                      background: 'var(--bg-secondary)',
-                      color: 'var(--text-secondary)',
-                      fontSize: 12
-                    }}>
-                      Dashboard
-                    </div>
+              <div style={{ display: 'grid', gap: 12 }}>
+                {[
+                  'AI-assisted question generation inside the builder',
+                  'Public response links with optional anonymous mode',
+                  'Response review, exports, and PDF reporting',
+                  'Analytics, summaries, and sentiment insights'
+                ].map((item) => (
+                  <div
+                    key={item}
+                    style={{
+                      padding: '12px 14px',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--radius)',
+                      background: 'var(--bg-card)'
+                    }}
+                  >
+                    {item}
                   </div>
-
-                  <div style={{
-                    padding: 24,
-                    display: 'grid',
-                    gridTemplateColumns: '2fr 1fr',
-                    gap: 18
-                  }}>
-                    <div style={{ display: 'grid', gap: 14 }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12 }}>
-                        {['Forms', 'Responses', 'Analytics'].map((label) => (
-                          <div key={label} style={{
-                            padding: '18px 16px',
-                            borderRadius: 14,
-                            border: '1px solid var(--border)',
-                            background: 'var(--bg-card)'
-                          }}>
-                            <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 8 }}>{label}</p>
-                            <div style={{ width: '70%', height: 12, borderRadius: 9999, background: 'var(--bg-secondary)', marginBottom: 8 }} />
-                            <div style={{ width: '45%', height: 8, borderRadius: 9999, background: 'var(--border)' }} />
-                          </div>
-                        ))}
-                      </div>
-
-                      <div style={{
-                        padding: 18,
-                        borderRadius: 14,
-                        border: '1px solid var(--border)',
-                        background: 'var(--bg-card)'
-                      }}>
-                        <div style={{ width: 180, height: 14, borderRadius: 9999, background: 'var(--bg-secondary)', marginBottom: 18 }} />
-                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, minHeight: 160 }}>
-                          {[52, 84, 62, 94, 76, 108, 88].map((height, index) => (
-                            <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                              <div style={{
-                                width: '100%',
-                                maxWidth: 28,
-                                height,
-                                borderRadius: 9999,
-                                background: index === 5 ? 'var(--primary)' : 'var(--border)'
-                              }} />
-                              <div style={{ width: 20, height: 8, borderRadius: 9999, background: 'var(--bg-secondary)' }} />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'grid', gap: 14 }}>
-                      <div style={{
-                        padding: 18,
-                        borderRadius: 14,
-                        border: '1px solid var(--border)',
-                        background: 'var(--bg-card)'
-                      }}>
-                        <div style={{ width: 120, height: 14, borderRadius: 9999, background: 'var(--bg-secondary)', marginBottom: 14 }} />
-                        <div style={{ display: 'grid', gap: 10 }}>
-                          {[1, 2, 3].map((item) => (
-                            <div key={item} style={{
-                              padding: '10px 12px',
-                              borderRadius: 12,
-                              background: 'var(--bg-secondary)',
-                              border: '1px solid var(--border)'
-                            }}>
-                              <div style={{ width: '85%', height: 10, borderRadius: 9999, background: 'var(--border-strong)', marginBottom: 8 }} />
-                              <div style={{ width: '55%', height: 8, borderRadius: 9999, background: 'var(--border)' }} />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div style={{
-                        padding: 18,
-                        borderRadius: 14,
-                        border: '1px solid var(--border)',
-                        background: 'var(--bg-card)'
-                      }}>
-                        <div style={{ width: 110, height: 14, borderRadius: 9999, background: 'var(--bg-secondary)', marginBottom: 14 }} />
-                        <div style={{ display: 'grid', gap: 10 }}>
-                          {[72, 54, 88].map((width, index) => (
-                            <div key={index}>
-                              <div style={{ width: `${width}%`, height: 10, borderRadius: 9999, background: index === 2 ? 'var(--primary)' : 'var(--border)' }} />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
-        <section id="product-overview" style={{ padding: '8px 0 24px' }}>
+        <section id="product-preview" style={{ padding: '0 0 48px' }}>
           <div className="page-container">
             <div style={{ maxWidth: 720, marginBottom: 24 }}>
-              <h2 style={{ marginBottom: 10 }}>Product overview</h2>
+              <h2 style={{ marginBottom: 10 }}>Product preview</h2>
               <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                QuiznSurvey helps creators build forms, collect responses through public links,
-                and review the results with practical analytics and AI-assisted summaries.
+                A quick look at the real workflow: create forms, publish public links, and review analytics from one workspace.
               </p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
-              {OVERVIEW_ITEMS.map((item) => (
-                <div key={item.title} className="section-card">
-                  <h3 style={{ marginBottom: 8 }}>{item.title}</h3>
-                  <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                    {item.description}
+            <div className="section-card" style={{ padding: 0, overflow: 'hidden' }}>
+              <div
+                style={{
+                  padding: '14px 18px',
+                  borderBottom: '1px solid var(--border)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 12,
+                  flexWrap: 'wrap'
+                }}
+              >
+                <div>
+                  <h3 style={{ marginBottom: 4 }}>Product tour</h3>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+                    This preview uses real product areas and feature names only.
                   </p>
                 </div>
-              ))}
+                <span className="badge badge-secondary">Builder · Responses · Analytics</span>
+              </div>
+
+              <div className="landing-preview-grid" style={{ padding: 24 }}>
+                <div
+                  style={{
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-lg)',
+                    background: 'var(--bg-card)',
+                    overflow: 'hidden'
+                  }}
+                >
+                  <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg-secondary)' }}>
+                    <strong style={{ fontSize: 14 }}>Workspace</strong>
+                  </div>
+
+                  <div style={{ display: 'grid', gap: 12, padding: 18 }}>
+                    {[
+                      'Dashboard overview',
+                      'AI question generator',
+                      'Public share link and QR code',
+                      'Responses review workspace',
+                      'Analytics and exports'
+                    ].map((item) => (
+                      <div
+                        key={item}
+                        style={{
+                          padding: '12px 14px',
+                          border: '1px solid var(--border)',
+                          borderRadius: 'var(--radius)',
+                          background: 'var(--bg-card)'
+                        }}
+                      >
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gap: 16 }}>
+                  {previewColumns.map((column) => (
+                    <div key={column.title} className="section-card" style={{ padding: '18px 20px' }}>
+                      <h3 style={{ marginBottom: 8 }}>{column.title}</h3>
+                      <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                        {column.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        <section style={{ padding: '24px 0 48px' }}>
+        <section id="features" style={{ padding: '8px 0 40px' }}>
           <div className="page-container">
-            <div style={{ maxWidth: 680, marginBottom: 24 }}>
+            <div style={{ maxWidth: 720, marginBottom: 24 }}>
               <h2 style={{ marginBottom: 10 }}>Core features</h2>
               <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                The platform focuses on the full workflow: authoring, publishing, collecting,
-                reviewing, and exporting results.
+                QuiznSurvey covers the full flow from creation to response collection and reporting.
               </p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
-              {FEATURE_CARDS.map((feature) => (
+            <div className="landing-grid-4">
+              {coreFeatures.map((feature) => (
                 <div key={feature.title} className="section-card">
                   <h3 style={{ marginBottom: 8 }}>{feature.title}</h3>
                   <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
@@ -281,20 +274,146 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section style={{ padding: '0 0 80px' }}>
+        <section id="ai" style={{ padding: '8px 0 40px' }}>
+          <div className="page-container">
+            <div style={{ maxWidth: 720, marginBottom: 24 }}>
+              <h2 style={{ marginBottom: 10 }}>AI features</h2>
+              <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                AI supports the workflow without taking control away from the creator. Generated content stays editable before publishing.
+              </p>
+            </div>
+
+            <div className="landing-grid-3">
+              {aiFeatures.map((feature) => (
+                <div key={feature.title} className="section-card">
+                  <h3 style={{ marginBottom: 8 }}>{feature.title}</h3>
+                  <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                    {feature.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="how-it-works" style={{ padding: '8px 0 40px' }}>
+          <div className="page-container">
+            <div style={{ maxWidth: 720, marginBottom: 24 }}>
+              <h2 style={{ marginBottom: 10 }}>How it works</h2>
+              <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                The workflow stays simple from form creation to response analysis.
+              </p>
+            </div>
+
+            <div className="landing-grid-3">
+              {howItWorks.map((item) => (
+                <div key={item.step} className="section-card">
+                  <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 10 }}>
+                    {item.step}
+                  </p>
+                  <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                    {item.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="use-cases" style={{ padding: '8px 0 40px' }}>
+          <div className="page-container">
+            <div style={{ maxWidth: 720, marginBottom: 24 }}>
+              <h2 style={{ marginBottom: 10 }}>Use cases</h2>
+              <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                The product is useful for classrooms, research, internal feedback, and public response collection.
+              </p>
+            </div>
+
+            <div className="landing-use-case-grid">
+              {useCases.map((item) => (
+                <div
+                  key={item}
+                  className="section-card"
+                  style={{ padding: '16px 18px', fontWeight: 600 }}
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section style={{ padding: '8px 0 56px' }}>
+          <div className="page-container">
+            <div className="section-card">
+              <div style={{ maxWidth: 720, marginBottom: 22 }}>
+                <h2 style={{ marginBottom: 10 }}>Built for practical product use</h2>
+                <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                  The core product is designed around public response collection, protected creator workflows, and exportable results.
+                </p>
+              </div>
+
+              <div className="landing-grid-3">
+                {trustItems.map((item) => (
+                  <div
+                    key={item}
+                    style={{
+                      padding: '14px 16px',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--radius)',
+                      background: 'var(--bg-secondary)',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section style={{ padding: '0 0 48px' }}>
           <div className="page-container">
             <div className="section-card" style={{ textAlign: 'center', padding: '40px 24px' }}>
               <h2 style={{ marginBottom: 12 }}>Start building your first AI-powered form.</h2>
               <p style={{ maxWidth: 620, margin: '0 auto 24px', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
                 Create a quiz or survey, publish it with a public link, and review the results from one dashboard.
               </p>
-              <Link to="/register" className="btn btn-primary btn-lg">
-                Create Account
-              </Link>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <Link to="/register" className="btn btn-primary btn-lg">
+                  Start Building
+                </Link>
+                <a href="#product-preview" className="btn btn-secondary btn-lg">
+                  View Demo
+                </a>
+              </div>
             </div>
           </div>
         </section>
       </main>
+
+      <footer style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-card)' }}>
+        <div className="page-container landing-footer-grid" style={{ paddingTop: 24, paddingBottom: 24 }}>
+          <div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 18, marginBottom: 8 }}>
+              Quizn<span style={{ color: 'var(--primary)' }}>Survey</span>
+            </div>
+            <p style={{ color: 'var(--text-secondary)', maxWidth: 360, lineHeight: 1.7 }}>
+              A full-stack product for building quizzes and surveys, collecting responses, and reviewing results with analytics and AI tools.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', alignItems: 'center' }}>
+            <a href="#features" style={{ color: 'var(--text-secondary)' }}>Features</a>
+            <a href="#ai" style={{ color: 'var(--text-secondary)' }}>AI</a>
+            <a href="#how-it-works" style={{ color: 'var(--text-secondary)' }}>How It Works</a>
+            <a href="#use-cases" style={{ color: 'var(--text-secondary)' }}>Use Cases</a>
+            <Link to="/login" style={{ color: 'var(--text-secondary)' }}>Login</Link>
+            <Link to="/register" style={{ color: 'var(--text-secondary)' }}>Start Building</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

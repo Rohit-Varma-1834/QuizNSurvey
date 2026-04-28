@@ -395,7 +395,9 @@ export default function AnalyticsPage() {
                     <tbody>
                       {a.recentResponses.map(r => (
                         <tr key={r._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                          <td style={{ padding: '12px', fontWeight: 500 }}>{r.respondentName}</td>
+                          <td style={{ padding: '12px', fontWeight: 500 }}>
+                            {r.isAnonymous ? 'Anonymous Respondent' : (r.respondentName || 'Anonymous Respondent')}
+                          </td>
                           <td style={{ padding: '12px' }}>
                             {form.type === 'quiz' && r.percentage !== null ? (
                               <span style={{ fontWeight: 700, color: r.percentage >= 60 ? 'var(--success)' : 'var(--danger)' }}>
@@ -406,7 +408,7 @@ export default function AnalyticsPage() {
                             )}
                           </td>
                           <td style={{ padding: '12px', color: 'var(--text-muted)' }}>
-                            {new Date(r.submittedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            {new Date(r.submittedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                           </td>
                         </tr>
                       ))}
@@ -520,7 +522,7 @@ function SummaryList({ title, items }) {
       </h4>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {items.map((item) => (
-          <div key={item} style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.72)', border: '1px solid rgba(37, 99, 235, 0.08)', fontSize: 13 }}>
+          <div key={item} style={{ padding: '10px 12px', borderRadius: 10, background: 'var(--bg-card)', border: '1px solid var(--border)', fontSize: 13 }}>
             {item}
           </div>
         ))}
@@ -552,7 +554,7 @@ function SentimentCard({ sentiment }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 16 }}>
         {segments.map((segment) => (
-          <div key={segment.key} style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.72)', border: '1px solid rgba(37, 99, 235, 0.08)' }}>
+          <div key={segment.key} style={{ padding: '14px 16px', borderRadius: 12, background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
             <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 8 }}>{segment.label}</p>
             <p style={{ fontSize: 26, fontWeight: 800, color: segment.color, marginBottom: 4 }}>{segment.percentage}%</p>
             <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>{segment.count} response{segment.count === 1 ? '' : 's'}</p>

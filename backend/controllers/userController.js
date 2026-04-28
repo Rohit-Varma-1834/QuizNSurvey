@@ -34,13 +34,17 @@ exports.updatePassword = async (req, res) => {
 
 exports.updateEmail = async (req, res) => {
   try {
-    const { email } = req.body;
-    const existing = await User.findOne({ email });
+    const normalizedEmail = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+    const existing = await User.findOne({ email: normalizedEmail });
     if (existing && existing._id.toString() !== req.user._id.toString()) {
       return res.status(400).json({ success: false, message: 'Email already in use' });
     }
 
-    const user = await User.findByIdAndUpdate(req.user._id, { email }, { new: true });
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { email: normalizedEmail },
+      { new: true, runValidators: true }
+    );
     res.json({ success: true, message: 'Email updated', user });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

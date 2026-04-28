@@ -3,11 +3,14 @@ const QRCode = require('qrcode');
 const { validationResult } = require('express-validator');
 const Form = require('../models/Form');
 const Response = require('../models/Response');
+const { validateFormData } = require('../utils/formValidation');
 
 // Get all forms for logged-in user
 exports.getForms = async (req, res) => {
   try {
-    const { status, type, search, sort = '-createdAt', page = 1, limit = 20 } = req.query;
+    const { status, type, search, sort = '-createdAt', page = 1, limit = 100 } = req.query;
+    const parsedPage = Math.max(1, parseInt(page, 10) || 1);
+    const parsedLimit = Math.min(100, Math.max(1, parseInt(limit, 10) || 100));
     const query = { creator: req.user._id };
 
     if (status) query.status = status;
@@ -17,14 +20,14 @@ exports.getForms = async (req, res) => {
     const total = await Form.countDocuments(query);
     const forms = await Form.find(query)
       .sort(sort)
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit))
+      .skip((parsedPage - 1) * parsedLimit)
+      .limit(parsedLimit)
       .select('-questions');
 
     res.json({
       success: true,
       forms,
-      pagination: { total, page: parseInt(page), pages: Math.ceil(total / limit) }
+      pagination: { total, page: parsedPage, pages: Math.ceil(total / parsedLimit) }
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -46,10 +49,19 @@ exports.getForm = async (req, res) => {
 exports.createForm = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
+    return res.status(400).json({
+      success: false,
+      message: errors.array()[0]?.msg || 'Invalid form data',
+      errors: errors.array(),
+    });
   }
 
   try {
+    const validation = validateFormData(req.body);
+    if (!validation.isValid) {
+      return res.status(400).json({ success: false, message: validation.messages[0], errors: validation.messages });
+    }
+
     const form = await Form.create({ ...req.body, creator: req.user._id });
     res.status(201).json({ success: true, message: 'Form created successfully', form });
   } catch (error) {
@@ -59,9 +71,32 @@ exports.createForm = async (req, res) => {
 
 // Update form
 exports.updateForm = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: errors.array()[0]?.msg || 'Invalid form data',
+      errors: errors.array(),
+    });
+  }
+
   try {
     const form = await Form.findOne({ _id: req.params.id, creator: req.user._id });
     if (!form) return res.status(404).json({ success: false, message: 'Form not found' });
+
+    const nextFormState = {
+      ...form.toObject(),
+      ...req.body,
+      settings: {
+        ...form.settings,
+        ...(req.body.settings || {}),
+      },
+    };
+    const validation = validateFormData(nextFormState);
+
+    if (!validation.isValid) {
+      return res.status(400).json({ success: false, message: validation.messages[0], errors: validation.messages });
+    }
 
     // Regenerate QR if publishing
     if (req.body.status === 'published' && form.status !== 'published') {
@@ -125,8 +160,9 @@ exports.publishForm = async (req, res) => {
     const form = await Form.findOne({ _id: req.params.id, creator: req.user._id });
     if (!form) return res.status(404).json({ success: false, message: 'Form not found' });
 
-    if (form.questions.length === 0) {
-      return res.status(400).json({ success: false, message: 'Add at least one question before publishing' });
+    const validation = validateFormData(form.toObject());
+    if (!validation.isValid) {
+      return res.status(400).json({ success: false, message: validation.messages[0], errors: validation.messages });
     }
 
     if (form.status === 'published') {

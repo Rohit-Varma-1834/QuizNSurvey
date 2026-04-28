@@ -651,7 +651,10 @@ exports.summarizeResponses = async (req, res) => {
       return res.status(502).json({ success: false, message: 'AI did not return a response summary' });
     }
 
-    const parsedOutput = JSON.parse(outputText);
+    const parsedOutput = safeParseJsonObject(outputText);
+    if (!parsedOutput) {
+      return res.status(502).json({ success: false, message: 'AI returned an invalid response summary format' });
+    }
     const summary = normalizeSummaryOutput(parsedOutput);
 
     return res.json({
@@ -738,7 +741,10 @@ exports.analyzeSentiment = async (req, res) => {
       return res.status(502).json({ success: false, message: 'AI did not return sentiment analysis' });
     }
 
-    const parsedOutput = JSON.parse(outputText);
+    const parsedOutput = safeParseJsonObject(outputText);
+    if (!parsedOutput) {
+      return res.status(502).json({ success: false, message: 'AI returned an invalid sentiment analysis format' });
+    }
     const sentiment = normalizeSentimentOutput(parsedOutput);
 
     return res.json({
