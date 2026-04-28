@@ -13,7 +13,7 @@ import {
 import toast from 'react-hot-toast';
 import api from '../services/api';
 import Navbar from '../components/layout/Navbar';
-import { PageLoader, EmptyState, ConfirmDialog } from '../components/ui/Common';
+import { PageLoader, EmptyState, ConfirmDialog, DateInput } from '../components/ui/Common';
 
 const formatLocalDateInput = (value) => {
   const date = new Date(value);
@@ -360,16 +360,12 @@ export default function ResponsesPage() {
                     onChange={(event) => setSearchText(event.target.value)}
                   />
 
-                  <input
-                    className="form-input"
-                    type="date"
+                  <DateInput
                     value={dateFrom}
                     onChange={(event) => setDateFrom(event.target.value)}
                   />
 
-                  <input
-                    className="form-input"
-                    type="date"
+                  <DateInput
                     value={dateTo}
                     onChange={(event) => setDateTo(event.target.value)}
                   />

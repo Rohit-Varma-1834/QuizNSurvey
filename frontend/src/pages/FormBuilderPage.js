@@ -6,7 +6,7 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import Navbar from '../components/layout/Navbar';
 import QuestionEditor from '../components/forms/QuestionEditor';
-import { PageLoader } from '../components/ui/Common';
+import { DateInput, PageLoader } from '../components/ui/Common';
 import {
   HiOutlineSave, HiOutlineGlobe, HiOutlineArrowLeft, HiOutlinePlus,
 } from 'react-icons/hi';
@@ -675,7 +675,7 @@ function BuilderShell({ type, form, setForm, formId, onSaved, questionTypes }) {
                 </div>
                 <div className="form-group">
                   <label className="form-label">{isQuiz ? 'Quiz Expires On' : 'Close Survey On'}</label>
-                  <input type="date" className="form-input" value={form.expiresAt || ''} onChange={e => setForm(f => ({ ...f, expiresAt: e.target.value }))} min={new Date().toISOString().split('T')[0]} />
+                  <DateInput value={form.expiresAt || ''} onChange={e => setForm(f => ({ ...f, expiresAt: e.target.value }))} min={new Date().toISOString().split('T')[0]} />
                   <span className="form-hint">Responses will stop after this date.</span>
                 </div>
                 <div className="form-group">

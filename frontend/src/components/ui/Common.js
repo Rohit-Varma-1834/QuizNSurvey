@@ -1,5 +1,6 @@
 // Contains shared small UI pieces used across many pages.
 import React from 'react';
+import { HiOutlineCalendar } from 'react-icons/hi';
 
 const isPlainText = (value) => typeof value === 'string' && /^[a-z0-9\s]+$/i.test(value.trim());
 
@@ -74,6 +75,45 @@ export function PageLoader() {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 80 }}>
       <Spinner size={32} />
+    </div>
+  );
+}
+
+export function DateInput({ className = '', style, ...props }) {
+  const inputRef = React.useRef(null);
+
+  const openPicker = () => {
+    const input = inputRef.current;
+    if (!input) return;
+
+    if (typeof input.showPicker === 'function') {
+      input.showPicker();
+      return;
+    }
+
+    input.focus();
+    if (typeof input.click === 'function') {
+      input.click();
+    }
+  };
+
+  return (
+    <div className="date-input-wrapper">
+      <input
+        ref={inputRef}
+        type="date"
+        className={`form-input date-input-field ${className}`.trim()}
+        style={style}
+        {...props}
+      />
+      <button
+        type="button"
+        className="date-input-button"
+        aria-label="Open date picker"
+        onClick={openPicker}
+      >
+        <HiOutlineCalendar className="date-input-icon" size={18} />
+      </button>
     </div>
   );
 }
