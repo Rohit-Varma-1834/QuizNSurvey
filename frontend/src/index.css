@@ -190,10 +190,17 @@ input, textarea, select { font-family: inherit; }
 
 .builder-sidebar {
   position: sticky;
-  top: 120px;
+  top: 132px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  align-self: start;
+  max-height: calc(100vh - 148px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding-right: 4px;
 }
 
 .builder-header-actions {
@@ -509,14 +516,23 @@ input, textarea, select { font-family: inherit; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 
+@media (max-width: 900px) {
+  .builder-workspace { grid-template-columns: 1fr; }
+  .builder-sidebar {
+    position: static;
+    top: auto;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
+}
+
 @media (max-width: 768px) {
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
   .container, .container-sm { padding: 0 16px; }
   .page-container { padding: 24px 16px; }
   .page-header { margin-bottom: 24px; }
   .toolbar-row { padding: 12px; }
-  .builder-workspace { grid-template-columns: 1fr; }
-  .builder-sidebar { position: static; }
   .builder-header-actions {
     width: 100%;
     justify-content: stretch;
